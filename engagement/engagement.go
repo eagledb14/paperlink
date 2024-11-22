@@ -1,163 +1,121 @@
 package engagement
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
+	"time"
 
 	_ "modernc.org/sqlite"
 )
 
-type EngagementDb struct {
-	db *sql.DB
-	folderPath string
-}
-
-func NewEngagementDb() EngagementDb {
-	folderPath := "./engagements/"
-
-	// Create the folder if it doesn't exist
-	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
-		err := os.Mkdir(folderPath, 0700)
-		if err != nil {
-			panic("Could not find folder " + folderPath)
-		}
-	}
-
-	db, err := sql.Open("sqlite", folderPath+"engagements.db")
-	if err != nil {
-		panic("Missing Resoruces")
-	}
-
-	newEngagementDb := EngagementDb{
-		db: db,
-		folderPath: folderPath,
-	}
-
-	newEngagementDb.createTable()
-	return newEngagementDb
-}
-
-func NewTemplateDb() EngagementDb {
-	folderPath := "./templates/"
-
-	// Create the folder if it doesn't exist
-	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
-		err := os.Mkdir(folderPath, 0700)
-		if err != nil {
-			panic("Could not find folder " + folderPath)
-		}
-	}
-
-	db, err := sql.Open("sqlite", folderPath+"templates.db")
-	if err != nil {
-		panic("Missing Resoruces")
-	}
-
-	newEngagementDb := EngagementDb{
-		db: db,
-		folderPath: folderPath,
-	}
-
-	newEngagementDb.createTable()
-	return newEngagementDb
-}
-
-func (e *EngagementDb) createTable() {
-	tx, _ := e.db.Begin()
-	tx.Exec(`CREATE TABLE IF NOT EXISTS engagements(
-name TEXT PRIMARY KEY,
-contact TEXT,
-email TEXT,
-)`)
-
-	err := tx.Commit()
-	if err != nil {
-		tx.Rollback()
-	}
-}
-
-func (e *EngagementDb) insert(name string, contact string, email string) error {
-	tx, _ := e.db.Begin()
-
-	_, err := tx.Exec(`INSERT INTO engagements(
-name,
-contact,
-email,
-) VALUES (?,?,?)`, name, contact, email)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	tx.Commit()
-	return nil
-}
-
-func (e *EngagementDb) CreateEngagement(name string, contact string, email string) error {
-	// create entry
-	e.insert(name, contact, email)
-
-	// create folder
-	err := os.Mkdir(e.folderPath+name, 0700)
-
-	// create section
-	err, _ = NewSectionDb(name, e.folderPath)
-	if err != nil {
-		return fmt.Errorf("CreateBlankEngagement: %w", err)
-	}
-
-	// create asset
-	err, _ = NewAssetDb(name, e.folderPath)
-	if err != nil {
-		return fmt.Errorf("CreateBlankEngagement: %w", err)
-	}
-
-	// create findings
-	err, _ = NewFindingDb(name, e.folderPath)
-	if err != nil {
-		return fmt.Errorf("CreateBlankEngagement: %w", err)
-	}
-
-	return nil
-}
-
-func (e *EngagementDb) CreateEngagementFromTemplate(name string, templateName string, contact string, email string) error {
-	copyPath := "./templates/"
-
-	// create entry
-	e.insert(templateName, contact, email)
-
-	fsys := os.DirFS(copyPath + templateName)
-	err := os.CopyFS(e.folderPath + name, fsys)
-	if err != nil {
-		return fmt.Errorf("CreateEngagementFromTemplate Copy: %w", err)
-	}
-	// copy section
-	// copy asset
-	// copy findings
-
-	return nil
-}
-
-func (e *EngagementDb) DeleteEngagement(name string) error {
-	err := os.RemoveAll(e.folderPath + name)
-
-	tx, err := e.db.Begin()
-	if err != nil {
-		return fmt.Errorf("DeleteEngagementDb: %w", err)
-	}
-
-	_, nil := tx.Exec(`DELETE FROM engagements WHERE name = ?`, name)
-	if err != nil {
-		return fmt.Errorf("DeleteEngagementDb Deletion: %w", err)
-	}
-
-	return nil
-}
-
 type Engagement struct {
+	db *DbWrapper
+	folderPath string
+
 	name    string
 	contact string
 	email   string
+}
+
+func NewEngagement(name string, contact string, email string) Engagement {
+	folderPath := "./engagements/"
+	return newDb(folderPath, name, contact, email)
+}
+
+func NewEngagementFromTemplate(templateName string, name string, contact string, email string) Engagement {
+	copyPath := "./templates/"
+
+	// copy template database
+	err := copy(copyPath + templateName + ".db", copyPath + templateName + ".db")
+	if err != nil {
+		fmt.Println(fmt.Errorf("CreateEngagementFromTemplate Copy: %w", err))
+	}
+
+	newEngagement := NewEngagement(name, contact, email)
+
+	return newEngagement
+}
+
+
+func NewTemplate(name string) Engagement {
+	folderPath := "./templates/"
+	return newDb(folderPath, name, "", "")
+}
+
+func newDb(folderPath string, name string, contact string, email string) Engagement {
+	// Create the folder if it doesn't exist
+	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
+		err := os.Mkdir(folderPath, 0700)
+		if err != nil {
+			panic("Could not find folder " + folderPath)
+		}
+	}
+
+	db, err := Open(folderPath+name+".db?_busy_timeout=10000")
+	if err != nil {
+		panic("Missing Resources")
+	}
+
+	newEngagement := Engagement{
+		db: db,
+		folderPath: folderPath,
+		name: name,
+		contact: contact,
+		email: email,
+	}
+
+	newEngagement.createTable()
+
+	// create engagement
+	newEngagement.insertEngagement(name, contact, email)
+
+	// create section
+	createSectionTable(db)
+
+	// create asset
+	createAssetTable(db)
+
+	// create findings
+	createFindingTable(db)
+
+	return newEngagement
+}
+
+func (e *Engagement) createTable() {
+	e.db.Exec(`CREATE TABLE IF NOT EXISTS engagements(
+name TEXT PRIMARY KEY,
+contact TEXT,
+email TEXT
+)`)
+}
+
+func (e *Engagement) insertEngagement(name string, contact string, email string) error {
+	err := e.db.Exec(`INSERT INTO engagements(
+name,
+contact,
+email
+) VALUES (?,?,?)`, name, contact, email)
+	return err
+}
+
+func (e *Engagement) Delete() {
+	fmt.Println(e.folderPath + e.name + ".db")
+	os.Remove(e.folderPath + e.name + ".db")
+	e.Close()
+}
+
+func (e *Engagement) Close() {
+	e.db.db.Close()
+}
+
+func (e *Engagement) InsertSection(order int, title string, body string) {
+	insertSection(e.db, order, title, body)
+}
+
+func (e *Engagement) InsertAsset(parent string, name string, assetType string) {
+	insertAsset(e.db, parent, name, assetType)
+}
+
+func (e *Engagement) InsertFinding(severity int, title string, startDate time.Time, summary string, description string) {
+	insertFinding(e.db, severity, title, startDate, summary, description)
 }
