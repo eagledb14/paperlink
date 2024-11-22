@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>JCTF Form Generator</title>
+        <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+	    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.blue.min.css">
+        <link rel="stylesheet" type="text/css" href="/style.css">
+    </head>
+	<body hx-boost="true">
+		<div class="content">
+			<div class="left">
+				hi there
+				<br>
+				other hi there
+			</div>
+			<div class="right">
+				{{.Body}}
+			</div>
+		</div>
+	</body>
+</html>
