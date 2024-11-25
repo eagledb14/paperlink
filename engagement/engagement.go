@@ -3,7 +3,6 @@ package engagement
 import (
 	"fmt"
 	"os"
-	"time"
 
 	_ "modernc.org/sqlite"
 )
@@ -23,10 +22,20 @@ func NewEngagement(name string, contact string, email string) Engagement {
 }
 
 func NewEngagementFromTemplate(templateName string, name string, contact string, email string) Engagement {
-	copyPath := "./templates/"
+	copyPath := "./templates/" + templateName + ".db"
+	destPath := "./engagements/" + name + ".db"
+
+	// Create the folder if it doesn't exist
+	if _, err := os.Stat("./engagements"); os.IsNotExist(err) {
+		err := os.Mkdir("./engagements", 0700)
+		if err != nil {
+			panic("Could not find folder " + "./engagements")
+		}
+	}
+	//todo: need to add dropping the engagement table, so the name doesn't show up from the template
 
 	// copy template database
-	err := copy(copyPath + templateName + ".db", copyPath + templateName + ".db")
+	err := copy(copyPath, destPath)
 	if err != nil {
 		fmt.Println(fmt.Errorf("CreateEngagementFromTemplate Copy: %w", err))
 	}
@@ -70,7 +79,8 @@ func newDb(folderPath string, name string, contact string, email string) Engagem
 	newEngagement.insertEngagement(name, contact, email)
 
 	// create section
-	createSectionTable(db)
+	err = createSectionTable(db)
+	fmt.Println(err)
 
 	// create asset
 	createAssetTable(db)
@@ -108,14 +118,3 @@ func (e *Engagement) Close() {
 	e.db.db.Close()
 }
 
-func (e *Engagement) InsertSection(order int, title string, body string) {
-	insertSection(e.db, order, title, body)
-}
-
-func (e *Engagement) InsertAsset(parent string, name string, assetType string) {
-	insertAsset(e.db, parent, name, assetType)
-}
-
-func (e *Engagement) InsertFinding(severity int, title string, startDate time.Time, summary string, description string) {
-	insertFinding(e.db, severity, title, startDate, summary, description)
-}

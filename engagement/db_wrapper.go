@@ -36,6 +36,10 @@ func (d *DbWrapper) Exec(query string, args ...any) error {
 	return err
 }
 
+func (d *DbWrapper) Query(query string) (*sql.Rows, error) {
+	return d.db.Query(query)
+}
+
 func copy(src, dst string) error {
 	BUFFERSIZE := 200
 	sourceFileStat, err := os.Stat(src)
