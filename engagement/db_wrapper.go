@@ -8,7 +8,6 @@ import (
 
 	"sync"
 
-	// "modernc.org/sqlite"
 	_ "modernc.org/sqlite"
 )
 
@@ -38,6 +37,10 @@ func (d *DbWrapper) Exec(query string, args ...any) error {
 
 func (d *DbWrapper) Query(query string) (*sql.Rows, error) {
 	return d.db.Query(query)
+}
+
+func (d *DbWrapper) QueryRow(query string, args ...any) *sql.Row {
+	return d.db.QueryRow(query, args...)
 }
 
 func copy(src, dst string) error {
