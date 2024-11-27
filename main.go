@@ -1,22 +1,40 @@
 package main
 
 import (
-	"strconv"
-	"time"
-
-	"github.com/eagledb14/paperlink/engagement"
+	// "github.com/eagledb14/paperlink/engagement"
+	"github.com/eagledb14/paperlink/net"
 )
 
 func main() {
+	// engagement.NewEngagementFromTemplate("test1", "test1", "thing", "other thing")
+	// engagement.NewEngagementFromTemplate("test1", "test2", "thing", "other thing")
+	// engagement.NewEngagementFromTemplate("test1", "test with spaces 1", "thing", "other thing")
+	// engagement.NewEngagementFromTemplate("test1", "test with spaces 2", "thing", "other thing")
+	net.Run()
+	// e := engagement.LoadEngagements()
+	// fmt.Println(e)
+	// fmt.Println(e[0].UpdateEngagement("cheese", e[0].Contact, e[0].Email))
+	// fmt.Println(e)
+	// e := engagement.NewEngagementFromTemplate("test1", "monkey", "1", "2")
+	// e.UpdateEngagement("cheese", e.Contact, e.Email)
+	// fmt.Println(e)
+	//
+	// t := engagement.LoadTemplates()
+	// fmt.Println(t)
 	// t := engagement.NewTemplate("test1")
 	// _ = t
-	e := engagement.NewEngagement("monkey", "1", "2")
-	for i := range 10 {
-		istr := strconv.Itoa(i)
-		e.InsertSection(i, "title", "body")
-		e.InsertAsset(istr, "name", "type")
-		e.InsertFinding(i, "title", time.Now(), "summary", "desc")
-	}
+	// e := engagement.NewEngagement("monkey", "1", "2")
+	// t := engagement.NewTemplate("test1")
+	// for i := range 10 {
+	// 	istr := strconv.Itoa(i)
+	// 	t.InsertSection(i, "title", "body")
+	// 	t.InsertAsset(istr, "name", "type")
+	// 	t.InsertFinding(i, "title", time.Now(), "summary", "desc")
+	// }
+	// e := engagement.NewEngagementFromTemplate("test1", "monkey", "1", "2")
+	// engagement.LoadEngagements()
+
+	// e.UpdateEngagement("")
 	// e.InsertSection(1, )
 	// _ = e
 	// e.Close()

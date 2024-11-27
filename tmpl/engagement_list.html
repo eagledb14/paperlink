@@ -1,0 +1,32 @@
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th scope="col">Client Name</th>
+			<th scope="col">Client POC</th>
+			<th scope="col">Client POC Email</th>
+			<th scope="col">
+				<div class="dropdown">
+					<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+						+
+					</button>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="/engagement/new">New</a></li>
+						<li><a class="dropdown-item" href="/engagement/template">From Template</a></li>
+					</ul>
+				</div>
+
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{range .}}
+		<tr class="click" hx-get="/section/view/{{.Name}}" hx-target="body" hx-push-url="true">
+			<td>{{.Name}}</td>
+			<td>{{.Contact}}</td>
+			<td>{{.Email}}</td>
+			<td></td>
+		</tr>
+		{{end}}
+	<tbody>
+</table>
+

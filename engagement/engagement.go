@@ -40,8 +40,10 @@ func NewEngagementFromTemplate(templateName string, name string, contact string,
 	}
 
 	newEngagement := NewEngagement(name, contact, email)
-	err = newEngagement.deleteEngagement(templateName)
-	fmt.Println(err)
+	newEngagement.deleteEngagement(templateName)
+	if templateName == name {
+		newEngagement.insertEngagement(name, contact, email)
+	} 
 
 	return newEngagement
 }
@@ -107,7 +109,6 @@ func LoadEngagements() []Engagement {
 			engagements = append(engagements, newEngagement)
 		}
 	}
-
 	return engagements
 }
 
@@ -161,8 +162,8 @@ func loadEngagement(name string, folderPath string) (Engagement, error) {
 	return newEngagement, nil
 }
 
-func (e *Engagement) createTable() {
-	e.db.Exec(`CREATE TABLE IF NOT EXISTS engagements(
+func (e *Engagement) createTable() error {
+	return e.db.Exec(`CREATE TABLE IF NOT EXISTS engagements(
 name TEXT PRIMARY KEY,
 contact TEXT,
 email TEXT
@@ -220,6 +221,6 @@ func (e *Engagement) Delete() {
 }
 
 func (e *Engagement) Close() {
-	e.db.db.Close()
+	e.db.Close()
 }
 

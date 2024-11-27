@@ -7,7 +7,7 @@ import (
 )
 
 func BuildHtml(fileName string, data interface{}) string {
-	tmpl, err := html.ParseFiles("./templates/" + fileName)
+	tmpl, err := html.ParseFiles("./tmpl/" + fileName)
 	if err != nil {
 		return err.Error()
 	}
@@ -23,7 +23,7 @@ func BuildHtml(fileName string, data interface{}) string {
 }
 
 func BuildText(fileName string, data interface{}) string {
-	tmpl, err := text.ParseFiles("./templates/" + fileName)
+	tmpl, err := text.ParseFiles("./tmpl/" + fileName)
 	if err != nil {
 		return err.Error()
 	}
@@ -38,11 +38,13 @@ func BuildText(fileName string, data interface{}) string {
 	return b.String()
 }
 
-func BuildPage(body string) string {
+func BuildPage(title string, body string) string {
 	data := struct {
+		Title string
 		Body string
 	} {
-		Body: "this is the body",
+		Title: title,
+		Body: body,
 	}
 
 	return BuildText("build.html", data)

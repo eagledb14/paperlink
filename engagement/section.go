@@ -3,7 +3,6 @@ package engagement
 
 type Section struct {
 	Key int
-	Index int
 	Title string
 	Body string
 }
@@ -17,20 +16,19 @@ body TEXT
 )`)
 }
 
-func (e *Engagement) InsertSection(index int, title string, body string) error {
+func (e *Engagement) InsertSection(title string, body string) error {
 	return e.db.Exec(`INSERT INTO sections(
-"index",
 title,
 body
-) VALUES (?, ?, ?)`, index, title, body)
+) VALUES (?, ?)`, title, body)
 }
 
-func (e *Engagement) UpdateSection(key int, index int, title string, body string) error {
-	return e.db.Exec(`UPDATE sections SET "index" = ?, title = ?, body = ? WHERE "key" = ?`, index, title, body, key)
+func (e *Engagement) UpdateSection(key int, title string, body string) error {
+	return e.db.Exec(`UPDATE sections SET  title = ?, body = ? WHERE "key" = ?`, title, body, key)
 }
 
 func (e* Engagement) GetSections() []Section {
-	rows, err := e.db.Query(`SELECT key, "index", title, body FROM sections`)
+	rows, err := e.db.Query(`SELECT key, title, body FROM sections`)
 	if err != nil {
 		return []Section{}
 	}
@@ -39,13 +37,21 @@ func (e* Engagement) GetSections() []Section {
 	sections := []Section{}
 	for rows.Next() {
 		newSection := Section{}
-		if err := rows.Scan(&newSection.Key, &newSection.Index, &newSection.Title, &newSection.Body); err != nil {
+		if err := rows.Scan(&newSection.Key, &newSection.Title, &newSection.Body); err != nil {
 			continue
 		}
 		sections = append(sections, newSection)
 	}
 
 	return sections
+}
+
+func (e *Engagement) GetSection(key string) Section {
+	row := e.db.QueryRow(`SELECT key, title, body FROM sections WHERE key = ?`, key)
+	newSection := Section{}
+	row.Scan(&newSection.Key, &newSection.Title, &newSection.Body)
+
+	return newSection
 }
 
 func (e *Engagement) DeleteSection(key int) error {

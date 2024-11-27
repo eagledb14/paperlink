@@ -1,0 +1,30 @@
+<br>
+
+<form hx-post="/engagement/template" hx-target="body">
+  <div class="mb-3">
+    <label for="name" class="form-label">Client Name</label>
+    <input type="text" name="name" id="name" class="form-control" aria-label="Text" required>
+  </div>
+  
+  <div class="mb-3">
+    <label for="contact" class="form-label">Client POC</label>
+    <input type="text" name="contact" id="contact" class="form-control"aria-label="Text">
+  </div>
+
+  <div class="mb-3">
+    <label for="email" class="form-label">Client POC Email</label>
+    <input type="email" name="email" id="email" class="form-control" aria-label="Email" autocomplete="email">
+  </div>
+
+    <div class="mb-3">
+	<label for="tempalte" class="form-label">Select Template Name</label>
+	<select class="form-select form-select-lg" required>
+	    <option selected disabled value="">Select Template Name</option>
+	    {{range .}}
+	    <option value="{{.Name}}">{{.Name}}</option>
+	    {{end}}
+	</select>
+    </div>
+
+  <button type="submit" class="btn btn-primary w-25">></button>
+</form>

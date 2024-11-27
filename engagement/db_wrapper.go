@@ -36,11 +36,21 @@ func (d *DbWrapper) Exec(query string, args ...any) error {
 }
 
 func (d *DbWrapper) Query(query string) (*sql.Rows, error) {
+	d.mutex.RLock()
+	defer d.mutex.RUnlock()
 	return d.db.Query(query)
 }
 
 func (d *DbWrapper) QueryRow(query string, args ...any) *sql.Row {
+	d.mutex.RLock()
+	defer d.mutex.RUnlock()
 	return d.db.QueryRow(query, args...)
+}
+
+func (d *DbWrapper) Close() {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	d.db.Close()
 }
 
 func copy(src, dst string) error {
