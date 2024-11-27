@@ -23,6 +23,10 @@ func Engagement(state *types.State, app *fiber.App) {
 
 	app.Post("/engagement/new", func(c *fiber.Ctx) error {
 		name := c.FormValue("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
 		contact := c.FormValue("contact")
 		email := c.FormValue("email")
 
@@ -39,6 +43,10 @@ func Engagement(state *types.State, app *fiber.App) {
 
 	app.Post("/engagement/template", func(c *fiber.Ctx) error {
 		name := c.FormValue("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
 		contact := c.FormValue("contact")
 		email := c.FormValue("email")
 		template := c.FormValue("template")
@@ -53,12 +61,12 @@ func Engagement(state *types.State, app *fiber.App) {
 		name := c.Params("name")
 		name, err := url.QueryUnescape(name)
 		if err != nil {
-			return c.SendStatus(404)
+			return c.SendString(BuildPage("Engagements", BuildHtml("engagement_list.html", state.Engagements)))
 		}
 
 		state.DeleteEnagement(name)
 
-		return c.SendStatus(200)
+		return c.SendString(BuildPage("Engagements", BuildHtml("engagement_list.html", state.Engagements)))
 	})
 
 

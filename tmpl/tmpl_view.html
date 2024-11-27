@@ -1,20 +1,25 @@
-<button class="btn btn-info w-25 mb-5" hx-get="/section/new/{{.EngagementName}}" hx-swap="outerHTML">+</button>
+<br>
+
+<div class="btn-group row" role="group">
+	<button class="btn btn-danger" hx-delete="/template/{{.Name}}" hx-target="body" hx-confirm='Are you sure you want to delete "{{.Name}}"'>Delete Template</button>
+	<button class="btn btn-info w-25 mb-5" hx-get="/template/section/new/{{.Name}}" hx-swap="outerHTML">+</button>
+</div>
 
 {{range .Sections}}
 <div hx-target="this">
 	<div class="title d-flex justify-content-between align-items-center p-3">
 		<div class="row g-3 d-flex align-items-center">
 			<div class="col-auto row">
-				<button class="btn btn-sm" hx-put="/section/up/{{$.EngagementName}}/{{.Key}}" hx-target="body">▲</button>
-				<button class="btn btn-sm" hx-put="/section/down/{{$.EngagementName}}/{{.Key}}" hx-target="body">▼</button>
+				<button class="btn btn-sm" hx-put="/template/section/up/{{$.Name}}/{{.Key}}" hx-target="body">▲</button>
+				<button class="btn btn-sm" hx-put="/template/section/down/{{$.Name}}/{{.Key}}" hx-target="body">▼</button>
 			</div>
 			<h3 class="col-auto text-center">{{.Title}}</h3>
 		</div>
 		<div>
 			<div class="btn-group" role="group">
 				<button class="btn btn-info px-4 py-2">Save</button>
-				<button class="btn btn-warning px-4 py-2" hx-get="/section/update/{{$.EngagementName}}/{{.Key}}" hx-target="closest div">~</button>
-				<button hx-delete="/section/{{$.EngagementName}}/{{.Key}}" hx-confirm='Are you sure you want to delete "{{.Title}}"' class="btn btn-danger px-4 py-2">-</button>
+				<button class="btn btn-warning px-4 py-2" hx-get="/template/section/update/{{$.Name}}/{{.Key}}" hx-target="closest div">~</button>
+				<button hx-delete="/template/section/{{$.Name}}/{{.Key}}" hx-confirm='Are you sure you want to delete "{{.Title}}"' class="btn btn-danger px-4 py-2">-</button>
 			</div>
 			<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{.Key}}" aria-expanded="false" aria-controls="collapseExample">v</button>
 		</div>
@@ -28,6 +33,7 @@
 </div>
 {{end}}
 
+
 <script>
 $(document).ready(function() {
   {{range .Sections}}
@@ -36,13 +42,13 @@ $(document).ready(function() {
 		height: 300,
 		styleWithSpan: true,
 	});
-	$('#editor{{.Key}}').summernote('code', {{.Body}});
+	$('#editor{{.Key}}').summernote('code', `{{.Body}}`);
 
 $('#editor{{.Key}}').on('summernote.blur', function() {
 	const content = $('#editor{{.Key}}').summernote('code');
 
 	var xhr = new XMLHttpRequest();
-	xhr.open("PUT", "/section/body/{{$.EngagementName}}/{{.Key}}", true);
+	xhr.open("PUT", "/template/section/body/{{$.Name}}/{{.Key}}", true);
 	xhr.setRequestHeader('Content-Type', 'application/json');
 	xhr.send(JSON.stringify({
 	    content: content

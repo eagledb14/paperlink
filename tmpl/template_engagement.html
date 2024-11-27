@@ -17,8 +17,8 @@
   </div>
 
     <div class="mb-3">
-	<label for="tempalte" class="form-label">Select Template Name</label>
-	<select class="form-select form-select-lg" required>
+	<label for="template" class="form-label">Select Template Name</label>
+	<select class="form-select form-select-lg" name="template" id="template" required>
 	    <option selected disabled value="">Select Template Name</option>
 	    {{range .}}
 	    <option value="{{.Name}}">{{.Name}}</option>

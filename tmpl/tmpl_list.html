@@ -1,0 +1,21 @@
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th scope="col">Client Name</th>
+			<th scope="col">
+			    <a class="btn btn-primary" type="button" hx-get="/template/new" hx-target="this" hx-swap="outerHTML">
+				    +
+			    </a>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{range .}}
+		<tr class="click" hx-get="/template/section/view/{{.Name}}" hx-target="body" hx-push-url="true">
+			<td>{{.Name}}</td>
+			<td></td>
+		</tr>
+		{{end}}
+	<tbody>
+</table>
+

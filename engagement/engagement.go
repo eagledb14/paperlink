@@ -3,6 +3,7 @@ package engagement
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -62,6 +63,8 @@ func newDb(folderPath string, name string, contact string, email string) Engagem
 			panic("Could not find folder " + folderPath)
 		}
 	}
+
+	name = strings.TrimSpace(name)
 
 	db, err := Open(folderPath+name+".db?_busy_timeout=10000")
 	if err != nil {

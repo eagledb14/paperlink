@@ -22,6 +22,7 @@ func Run() {
 
 	Engagement(state, app)
 	Section(state, app)
+	Template(state, app)
 
 	app.Static("/style.css", "./tmpl/styles.css")
 	app.Listen(":8080")

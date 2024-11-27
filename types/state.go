@@ -34,10 +34,10 @@ func NewState() *State {
 
 func (s *State) GetEngagement(name string) (*engagement.Engagement, error) {
 	index, exists := s.EngagementMap[name]
-	if !exists {
-		return nil, errors.New("Missing Enagement")
-
+	if !exists || index >= len(s.Engagements) {
+		return nil, errors.New("Missing Engagement")
 	}
+
 	e := s.Engagements[index]
 	
 	return &e, nil
@@ -45,10 +45,10 @@ func (s *State) GetEngagement(name string) (*engagement.Engagement, error) {
 
 func (s *State) GetTemplate(name string) (*engagement.Engagement, error) {
 	index, exists := s.TemplateMap[name]
-	if !exists {
+	if !exists || index >= len(s.Templates) {
 		return nil, errors.New("Missing Template")
-
 	}
+
 	e := s.Templates[index]
 	
 	return &e, nil

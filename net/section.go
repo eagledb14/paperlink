@@ -1,7 +1,6 @@
 package net
 
 import (
-	"fmt"
 	"net/url"
 	"strconv"
 
@@ -19,27 +18,6 @@ func Section(state *types.State, app *fiber.App) {
 			return c.SendStatus(404)
 		}
 
-		// e, err := state.GetEngagement(name)
-		// if err != nil {
-		// 	return c.SendStatus(fiber.StatusNotFound)
-		// }
-		//
-		// sectionData := struct {
-		// 	EngagementName string
-		// 	Sections []engagement.Section
-		// }{
-		// 	EngagementName: e.Name,
-		// 	Sections: e.GetSections(),
-		// }
-		//
-		// data := struct {
-		// 	Body string
-		// 	Name string
-		// } {
-		// 	Body: BuildHtml("section_view.html", sectionData),
-		// 	Name: e.Name,
-		// }
-
 		return c.SendString(BuildPage(name, getSectionView(state, name)))
 	})
 
@@ -56,6 +34,10 @@ func Section(state *types.State, app *fiber.App) {
 		}
 
 		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
 		key := c.Params("key")
 
 		e, err := state.GetEngagement(name)
@@ -70,8 +52,12 @@ func Section(state *types.State, app *fiber.App) {
 
 	app.Delete("/section/:name/:key", func(c *fiber.Ctx) error {
 		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
 		key := c.Params("key")
-		e, _  := state.GetEngagement(name)
+		e, err  := state.GetEngagement(name)
 		keyInt, err := strconv.Atoi(key)
 		if err != nil {
 			return c.SendStatus(fiber.StatusNoContent)
@@ -84,11 +70,19 @@ func Section(state *types.State, app *fiber.App) {
 
 	app.Get("/section/new/:name", func(c *fiber.Ctx) error {
 		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
 		return c.SendString(BuildHtml("new_section.html", "/section/new/" + name))
 	})
 
 	app.Post("/section/new/:name", func(c *fiber.Ctx) error {
 		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
 		e, err := state.GetEngagement(name)
 		if err != nil {
 			return c.Redirect("/section/view/"+name)
@@ -102,12 +96,20 @@ func Section(state *types.State, app *fiber.App) {
 
 	app.Get("/section/update/:name/:key", func(c *fiber.Ctx) error {
 		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
 		key := c.Params("key")
 		return c.SendString(BuildHtml("new_section.html", "/section/update/"+name+"/"+key))
 	})
 
 	app.Post("/section/update/:name/:key", func(c *fiber.Ctx) error {
 		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
 		key := c.Params("key")
 		e, err := state.GetEngagement(name)
 		if err != nil {
@@ -125,6 +127,10 @@ func Section(state *types.State, app *fiber.App) {
 
 	app.Put("/section/up/:name/:key", func(c *fiber.Ctx) error {
 		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
 		key := c.Params("key")
 
 		e, err := state.GetEngagement(name)
@@ -150,6 +156,10 @@ func Section(state *types.State, app *fiber.App) {
 
 	app.Put("/section/down/:name/:key", func(c *fiber.Ctx) error {
 		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
 		key := c.Params("key")
 
 		e, err := state.GetEngagement(name)

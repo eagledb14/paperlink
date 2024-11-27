@@ -1,5 +1,7 @@
 package engagement
 
+import "strings"
+
 
 type Section struct {
 	Key int
@@ -24,6 +26,7 @@ body
 }
 
 func (e *Engagement) UpdateSection(key int, title string, body string) error {
+	strings.ReplaceAll(body, "`", "'")
 	return e.db.Exec(`UPDATE sections SET  title = ?, body = ? WHERE "key" = ?`, title, body, key)
 }
 
