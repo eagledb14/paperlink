@@ -13,16 +13,12 @@ import (
 func Template(state *types.State, app *fiber.App) {
 	app.Get("/template", func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "text/html")
-		return c.SendString(BuildPage("Templates", BuildHtml("tmpl_list.html", state.Templates)))
-	})
-
-	app.Get("/template/new", func(c *fiber.Ctx) error {
-		return c.SendString(BuildHtml("tmpl_new.html", ""))
+		return c.SendString(BuildPage("/", "Templates", BuildHtml("tmpl_list.html", state.Templates)))
 	})
 
 	app.Post("/template/new", func(c *fiber.Ctx) error {
-		title := strings.Clone(c.FormValue("title"))
-		t := engagement.NewTemplate(title)
+		title := c.Get("HX-Prompt")
+		t := engagement.NewTemplate(strings.Clone(title))
 		state.AddTemplate(t)
 
 		return c.Redirect("/template")
@@ -34,19 +30,10 @@ func Template(state *types.State, app *fiber.App) {
 		name := c.Params("name")
 		name, err := url.QueryUnescape(name)
 		if err != nil {
-			return c.SendString(BuildPage("Engagements", BuildHtml("engagement_list.html", state.Engagements)))
+			return c.SendString(BuildPage("/ templates / ", "Engagements", BuildHtml("engagement_list.html", state.Engagements)))
 		}
 
-		return c.SendString(BuildPage(name, getTemplateView(state, name)))
-	})
-
-	app.Get("/template/section/new/:name", func(c *fiber.Ctx) error {
-		name := c.Params("name")
-		name, err := url.QueryUnescape(name)
-		if err != nil {
-			return c.SendStatus(404)
-		}
-		return c.SendString(BuildHtml("new_section.html", "/template/section/new/" + name))
+		return c.SendString(BuildPage("/ templates / ", name, getTemplateView(state, name)))
 	})
 
 	app.Post("/template/section/new/:name", func(c *fiber.Ctx) error {
@@ -60,7 +47,7 @@ func Template(state *types.State, app *fiber.App) {
 			return c.Redirect("/template/section/view/"+name)
 		}
 
-		title := c.FormValue("title")
+		title := c.Get("HX-Prompt")
 		err = e.InsertSection(title, "")
 
 		return c.Redirect("/template/section/view/"+name)
@@ -70,13 +57,12 @@ func Template(state *types.State, app *fiber.App) {
 		name := c.Params("name")
 		name, err := url.QueryUnescape(name)
 		if err != nil {
-			return c.SendString(BuildPage("Engagements", BuildHtml("engagement_list.html", state.Engagements)))
+			return c.SendString(BuildPage("/ templates / ", "Engagements", BuildHtml("engagement_list.html", state.Engagements)))
 		}
 
 		state.DeleteTemplate(name)
 
-		// return c.SendString(BuildPage(name, getTemplateView(state, name)))
-		return c.SendString(BuildPage("Templates", BuildHtml("tmpl_list.html", state.Templates)))
+		return c.SendString(BuildPage("/ templates / ", "Templates", BuildHtml("tmpl_list.html", state.Templates)))
 	})
 
 	app.Put("/template/section/body/:name/:key", func(c *fiber.Ctx) error {
@@ -103,7 +89,7 @@ func Template(state *types.State, app *fiber.App) {
 			return c.SendStatus(fiber.StatusNotFound)
 		}
 		s := e.GetSection(key)
-		e.UpdateSection(s.Key, s.Title, parser.Content)
+		e.UpdateSection(s.Key, s.Index, s.Title, parser.Content)
 
 		return c.SendStatus(fiber.StatusOK)	
 	})
@@ -130,16 +116,6 @@ func Template(state *types.State, app *fiber.App) {
 		return c.SendString("")
 	})
 
-	app.Get("/template/section/update/:name/:key", func(c *fiber.Ctx) error {
-		name := c.Params("name")
-		name, err := url.QueryUnescape(name)
-		if err != nil {
-			return c.SendStatus(404)
-		}
-		key := c.Params("key")
-		return c.SendString(BuildHtml("new_section.html", "/template/section/update/"+name+"/"+key))
-	})
-
 	app.Post("/template/section/update/:name/:key", func(c *fiber.Ctx) error {
 		name := c.Params("name")
 		name, err := url.QueryUnescape(name)
@@ -152,15 +128,14 @@ func Template(state *types.State, app *fiber.App) {
 			return c.Redirect("/template/section/view/"+name)
 		}
 
-		title := c.FormValue("title")
+		title := c.Get("HX-Prompt")
 		section := e.GetSection(key)
 
 		keyInt, err := strconv.Atoi(key)
-		e.UpdateSection(keyInt, title, section.Body)
+		e.UpdateSection(keyInt, section.Index, title, section.Body)
 
 		return c.Redirect("/template/section/view/"+name)
 	})
-
 
 	app.Put("/template/section/up/:name/:key", func(c *fiber.Ctx) error {
 		name := c.Params("name")
@@ -172,23 +147,19 @@ func Template(state *types.State, app *fiber.App) {
 
 		e, err := state.GetTemplate(name)
 		if err != nil {
-			return c.SendString(BuildPage(name, getTemplateView(state, name)))
+			return c.SendString(BuildPage("/ templates / ", name, getTemplateView(state, name)))
 		}
 
 		bottomSection := e.GetSection(key)
-		keyInt, err := strconv.Atoi(key)
-		if err != nil || bottomSection.Key == 0 {
-			return c.SendString(BuildPage(name, getTemplateView(state, name)))
-		}
 
-		topSection := e.GetSection(strconv.Itoa(keyInt - 1))
+		topSection := e.GetSectionFromIndex(bottomSection.Index - 1)
 		if topSection.Key == 0 {
-			return c.SendString(BuildPage(name, getTemplateView(state, name)))
+			return c.SendString(BuildPage("/ templates / ", name, getTemplateView(state, name)))
 		}
-		e.UpdateSection(topSection.Key, bottomSection.Title, bottomSection.Body)
-		e.UpdateSection(bottomSection.Key, topSection.Title, topSection.Body)
+		err = e.UpdateSection(bottomSection.Key, topSection.Index, bottomSection.Title, bottomSection.Body)
+		err = e.UpdateSection(topSection.Key, bottomSection.Index, topSection.Title, topSection.Body)
 
-		return c.SendString(BuildPage(name, getTemplateView(state, name)))
+		return c.SendString(BuildPage("/ templates / ", name, getTemplateView(state, name)))
 	})
 
 	app.Put("/template/section/down/:name/:key", func(c *fiber.Ctx) error {
@@ -201,23 +172,19 @@ func Template(state *types.State, app *fiber.App) {
 
 		e, err := state.GetTemplate(name)
 		if err != nil {
-			return c.SendString(BuildPage(name, getTemplateView(state, name)))
+			return c.SendString(BuildPage("/ templates / ", name, getTemplateView(state, name)))
 		}
 
 		bottomSection := e.GetSection(key)
-		keyInt, err := strconv.Atoi(key)
-		if err != nil || bottomSection.Key == 0 {
-			return c.SendString(BuildPage(name, getTemplateView(state, name)))
-		}
 
-		topSection := e.GetSection(strconv.Itoa(keyInt + 1))
+		topSection := e.GetSectionFromIndex(bottomSection.Index + 1)
 		if topSection.Key == 0 {
-			return c.SendString(BuildPage(name, getTemplateView(state, name)))
+			return c.SendString(BuildPage("/ templates / ", name, getTemplateView(state, name)))
 		}
-		e.UpdateSection(topSection.Key, bottomSection.Title, bottomSection.Body)
-		e.UpdateSection(bottomSection.Key, topSection.Title, topSection.Body)
+		err = e.UpdateSection(bottomSection.Key, topSection.Index, bottomSection.Title, bottomSection.Body)
+		err = e.UpdateSection(topSection.Key, bottomSection.Index, topSection.Title, topSection.Body)
 
-		return c.SendString(BuildPage(name, getTemplateView(state, name)))
+		return c.SendString(BuildPage("/ templates / ", name, getTemplateView(state, name)))
 	})
 
 

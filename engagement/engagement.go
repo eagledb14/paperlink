@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	_ "modernc.org/sqlite"
 )
@@ -15,6 +16,7 @@ type Engagement struct {
 	Name    string
 	Contact string
 	Email   string
+	TimeStamp time.Time
 }
 
 func NewEngagement(name string, contact string, email string) Engagement {
@@ -43,7 +45,7 @@ func NewEngagementFromTemplate(templateName string, name string, contact string,
 	newEngagement := NewEngagement(name, contact, email)
 	newEngagement.deleteEngagement(templateName)
 	if templateName == name {
-		newEngagement.insertEngagement(name, contact, email)
+		newEngagement.insertEngagement(name, contact, email, time.Now())
 	} 
 
 	return newEngagement
@@ -77,12 +79,13 @@ func newDb(folderPath string, name string, contact string, email string) Engagem
 		Name: name,
 		Contact: contact,
 		Email: email,
+		TimeStamp: time.Now(),
 	}
 
 	newEngagement.createTable()
 
 	// create engagement
-	newEngagement.insertEngagement(name, contact, email)
+	newEngagement.insertEngagement(name, contact, email, newEngagement.TimeStamp)
 
 	// create section
 	createSectionTable(db)
@@ -112,6 +115,7 @@ func LoadEngagements() []Engagement {
 			engagements = append(engagements, newEngagement)
 		}
 	}
+
 	return engagements
 }
 
@@ -143,7 +147,7 @@ func loadEngagement(name string, folderPath string) (Engagement, error) {
 		panic("Missing Resources")
 	}
 	
-	rows, err := db.Query(`SELECT name, contact, email FROM engagements`)
+	rows, err := db.Query(`SELECT name, contact, email, timeStamp FROM engagements`)
 	if err != nil {
 		fmt.Println(err)
 		return Engagement{}, err
@@ -151,11 +155,14 @@ func loadEngagement(name string, folderPath string) (Engagement, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err = rows.Scan(&newEngagement.Name, &newEngagement.Contact, &newEngagement.Email)
+		var unix int64
+		err = rows.Scan(&newEngagement.Name, &newEngagement.Contact, &newEngagement.Email, &unix)
 		if err != nil {
 			fmt.Println(err)
 			return Engagement{}, err
 		}
+
+		newEngagement.TimeStamp = time.Unix(unix, 0)
 
 		newEngagement.db = db
 		newEngagement.folderPath = folderPath
@@ -169,7 +176,8 @@ func (e *Engagement) createTable() error {
 	return e.db.Exec(`CREATE TABLE IF NOT EXISTS engagements(
 name TEXT PRIMARY KEY,
 contact TEXT,
-email TEXT
+email TEXT,
+timeStamp INTEGER
 )`)
 }
 
@@ -178,12 +186,13 @@ func (e *Engagement) deleteEngagement(templateName string) error {
 	return e.db.Exec(`DELETE FROM engagements WHERE name = ?`, templateName)
 }
 
-func (e *Engagement) insertEngagement(name string, contact string, email string) error {
+func (e *Engagement) insertEngagement(name string, contact string, email string, time time.Time) error {
 	err := e.db.Exec(`INSERT INTO engagements(
 name,
 contact,
-email
-) VALUES (?,?,?)`, name, contact, email)
+email,
+timeStamp
+) VALUES (?,?,?)`, name, contact, email, time.Unix())
 	return err
 }
 

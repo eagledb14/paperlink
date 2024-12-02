@@ -25,6 +25,14 @@ func Run() {
 	Template(state, app)
 
 	app.Static("/style.css", "./tmpl/styles.css")
+
+	app.Static("/tinymce.min.js", "./resources/tinymce/tinymce.min.js")
+	app.Static("/themes/silver/theme.min.js", "./resources/tinymce/themes/silver/theme.min.js")
+	app.Static("/plugins", "./resources/tinymce/plugins")
+	app.Static("/models", "./resources/tinymce/models")
+	app.Static("/icons", "./resources/tinymce/icons")
+	app.Static("/skins", "./resources/tinymce/skins")
+
 	app.Listen(":8080")
 }
 

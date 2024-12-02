@@ -1,17 +1,17 @@
 <table class="table table-striped">
 	<thead>
 		<tr>
-			<th scope="col">Client Name</th>
-			<th scope="col">
-			    <a class="btn btn-primary" type="button" hx-get="/template/new" hx-target="this" hx-swap="outerHTML">
+			<th>Client Name</th>
+			<th>
+			    <button hx-post="/template/new" hx-target="body" hx-prompt="Enter Template Name">
 				    +
-			    </a>
+			    </button>
 			</th>
 		</tr>
 	</thead>
 	<tbody>
 		{{range .}}
-		<tr class="click" hx-get="/template/section/view/{{.Name}}" hx-target="body" hx-push-url="true">
+		<tr class="click" onclick="window.location.href='/template/section/view/{{.Name}}';">
 			<td>{{.Name}}</td>
 			<td></td>
 		</tr>

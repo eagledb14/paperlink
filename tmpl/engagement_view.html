@@ -1,15 +1,16 @@
 <br>
 
-<nav class="navbar navbar-expand-lg bg-primary">
-    <div class="container-fluid">
-	<div class="collapse navbar-collapse">
-	    <a class="btn text-white" href="/section/view/{{.Name}}">Narrative</a>
-	    <a class="btn text-white" href="/finding/view/{{.Name}}">Findings</a>
-	    <a class="btn text-white" href="/asset/view/{{.Name}}">Assets</a>
-	    <a class="btn text-white" href="/code/view/{{.Name}}">Short Codes</a>
-	    <button class="btn btn-danger" hx-delete="/engagement/{{.Name}}" hx-target="body" hx-confirm='Are you sure you want to delete "{{.Name}}"'>Delete Engagement</button>
-	</div>
-    </div>
+<nav class="bg-primary p-16 f-white">
+	<ul>
+		<li><a href="/section/view/{{.Name}}">Narrative</a></li>
+		<li><a href="/finding/view/{{.Name}}">Findings</a></li>
+		<li><a href="/asset/view/{{.Name}}">Assets</a></li>
+		<li><a href="/code/view/{{.Name}}">Short Codes</a></li>
+		<li><button hx-post="{{.New}}" hx-target="body" hx-prompt="Enter Section Name">{{.Prompt}}</button></li>
+		<li><button hx-delete="/engagement/{{.Name}}" hx-target="body" hx-confirm='Are you sure you want to delete "{{.Name}}"'>Delete Engagement</button></li>
+	<ul>
 </nav>
+
+<br>
 
 {{.Body}}

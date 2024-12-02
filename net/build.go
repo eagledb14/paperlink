@@ -38,11 +38,13 @@ func BuildText(fileName string, data interface{}) string {
 	return b.String()
 }
 
-func BuildPage(title string, body string) string {
+func BuildPage(directory string, title string, body string) string {
 	data := struct {
+		Directory string
 		Title string
 		Body string
 	} {
+		Directory: directory,
 		Title: title,
 		Body: body,
 	}

@@ -32,6 +32,11 @@ func NewState() *State {
 	return &newState
 }
 
+
+	// sort.Slice(engagements, func(i, j int) bool {
+	// 	return engagements[j].TimeStamp.Before(engagements[i].TimeStamp)
+	// })
+
 func (s *State) GetEngagement(name string) (*engagement.Engagement, error) {
 	index, exists := s.EngagementMap[name]
 	if !exists || index >= len(s.Engagements) {

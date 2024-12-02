@@ -1,61 +1,103 @@
+
+<nav class="bg-primary p-16 f-white">
+	<ul>
+		<li><button class="btn btn-danger" hx-delete="/template/{{.Name}}" hx-target="body" hx-confirm='Are you sure you want to delete "{{.Name}}"'>Delete Template</button></li>
+		<li><button class="btn btn-info w-25 mb-5" hx-post="/template/section/new/{{.Name}}" hx-target="body" hx-prompt="Enter Section Name">New Section</button></li>
+	<ul>
+</nav>
 <br>
 
-<div class="btn-group row" role="group">
-	<button class="btn btn-danger" hx-delete="/template/{{.Name}}" hx-target="body" hx-confirm='Are you sure you want to delete "{{.Name}}"'>Delete Template</button>
-	<button class="btn btn-info w-25 mb-5" hx-get="/template/section/new/{{.Name}}" hx-swap="outerHTML">+</button>
-</div>
-
 {{range .Sections}}
-<div hx-target="this">
-	<div class="title d-flex justify-content-between align-items-center p-3">
-		<div class="row g-3 d-flex align-items-center">
-			<div class="col-auto row">
-				<button class="btn btn-sm" hx-put="/template/section/up/{{$.Name}}/{{.Key}}" hx-target="body">▲</button>
-				<button class="btn btn-sm" hx-put="/template/section/down/{{$.Name}}/{{.Key}}" hx-target="body">▼</button>
-			</div>
-			<h3 class="col-auto text-center">{{.Title}}</h3>
+<details hx-target="this">
+	<summary class="contrast outline" role="button">
+		<div role="group">
+			<button class="btn-sm" hx-put="/template/section/up/{{$.Name}}/{{.Key}}" hx-target="body">▲</button>
+			<button class="btn-sm" hx-put="/template/section/down/{{$.Name}}/{{.Key}}" hx-target="body">▼</button>
 		</div>
-		<div>
-			<div class="btn-group" role="group">
-				<button class="btn btn-info px-4 py-2">Save</button>
-				<button class="btn btn-warning px-4 py-2" hx-get="/template/section/update/{{$.Name}}/{{.Key}}" hx-target="closest div">~</button>
-				<button hx-delete="/template/section/{{$.Name}}/{{.Key}}" hx-confirm='Are you sure you want to delete "{{.Title}}"' class="btn btn-danger px-4 py-2">-</button>
-			</div>
-			<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{.Key}}" aria-expanded="false" aria-controls="collapseExample">v</button>
+		<h3>{{.Title}}<h3>
+	</summary>
+	<article>
+		<div role="group">
+			<button>Save</button>
+			<button hx-post="/template/section/update/{{$.Name}}/{{.Key}}" hx-target="body" hx-prompt="Enter Section Name">Rename</button>
+			<button hx-delete="/template/section/{{$.Name}}/{{.Key}}" hx-confirm='Are you sure you want to delete "{{.Title}}"' hx-swap="outerHTML" class="btn btn-danger px-4 py-2">Delete</button>
 		</div>
-	</div>
-	</p>
-	<div class="collapse" id="collapse{{.Key}}">
-		<div class="card card-body">
-			<div id="editor{{.Key}}"></div>
-		</div>
-	</div>
-</div>
+		<div id="editor{{.Key}}"></div>
+	</article>
+</details>
+<hr>
 {{end}}
 
-
 <script>
-$(document).ready(function() {
-  {{range .Sections}}
-    setTimeout(function() {
-	$('#editor{{.Key}}').summernote({
-		height: 300,
-		styleWithSpan: true,
-	});
-	$('#editor{{.Key}}').summernote('code', `{{.Body}}`);
+function init() {
+	{{range .Sections}}
+	setTimeout(function() {
+		tinymce.remove('#editor{{.Key}}')
+		tinymce.init({
+		  selector: '#editor{{.Key}}',
+		  license_key: 'gpl',
+		  promotion: false,
+		  plugins: 'preview importcss searchreplace autolink directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
+		  menubar: 'edit view insert format tools table help',
+		  toolbar: "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | pagebreak anchor codesample | ltr rtl",
+		  image_advtab: true,
+		  importcss_append: true,
+		  file_picker_callback: (callback, value, meta) => {
+		    const input = document.createElement('input');
+		    input.type = 'file';
 
-$('#editor{{.Key}}').on('summernote.blur', function() {
-	const content = $('#editor{{.Key}}').summernote('code');
+		    if (meta.filetype === 'image') {
+			input.accept = 'image/*';
+		    } else if (meta.filetype === 'media') {
+			input.accept = 'video/*, audio/*';
+		    } else {
+			input.accept = '*/*';
+		    }
 
-	var xhr = new XMLHttpRequest();
-	xhr.open("PUT", "/template/section/body/{{$.Name}}/{{.Key}}", true);
-	xhr.setRequestHeader('Content-Type', 'application/json');
-	xhr.send(JSON.stringify({
-	    content: content
-	}));
-	});
-    }, 10);
-    
-  {{end}}
+		    input.onchange = (event) => {
+			const file = event.target.files[0];
+			if (file) {
+			    const reader = new FileReader();
+
+			    reader.onload = (e) => {
+				callback(e.target.result, { alt: file.name });
+			    };
+
+			    reader.readAsDataURL(file);
+			}
+		    };
+
+		    input.click();
+		  },  
+		  height: 600,
+		  quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+		  noneditable_class: 'mceNonEditable',
+		  toolbar_mode: 'sliding',
+		  contextmenu: 'link image table',
+		  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+		  setup: function (editor) {
+		      editor.on('blur', function () {
+			const content = editor.getContent();
+
+			var xhr = new XMLHttpRequest();
+			xhr.open("PUT", "/template/section/body/{{$.Name}}/{{.Key}}", true);
+			xhr.setRequestHeader('Content-Type', 'application/json');
+			xhr.send(JSON.stringify({
+			    content: content,
+			}));
+		      });
+		  },
+		  init_instance_callback: function (editor) {
+		    editor.setContent(`{{.Body}}`);
+		  },
+		});
+	}, 10);
+	{{end}}
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+document.addEventListener('htmx:afterSettle', () => {
+	init();
 });
 </script>

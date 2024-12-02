@@ -13,12 +13,12 @@ func Engagement(state *types.State, app *fiber.App) {
 	app.Get("/engagement", func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "text/html")
 
-		return c.SendString(BuildPage("Engagements", BuildHtml("engagement_list.html", state.Engagements)))
+		return c.SendString(BuildPage("/", "Engagements", BuildHtml("engagement_list.html", state.Engagements)))
 	})
 
 	app.Get("/engagement/new", func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "text/html")
-		return c.SendString(BuildPage("Engagements", BuildHtml("new_engagement.html", struct{}{})))
+		return c.SendString(BuildPage("/", "Engagements", BuildHtml("new_engagement.html", struct{}{})))
 	})
 
 	app.Post("/engagement/new", func(c *fiber.Ctx) error {
@@ -38,7 +38,7 @@ func Engagement(state *types.State, app *fiber.App) {
 
 	app.Get("/engagement/template", func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "text/html")
-		return c.SendString(BuildPage("Engagements", BuildHtml("template_engagement.html", state.Templates)))
+		return c.SendString(BuildPage("/", "Engagements", BuildHtml("template_engagement.html", state.Templates)))
 	})
 
 	app.Post("/engagement/template", func(c *fiber.Ctx) error {
@@ -61,12 +61,12 @@ func Engagement(state *types.State, app *fiber.App) {
 		name := c.Params("name")
 		name, err := url.QueryUnescape(name)
 		if err != nil {
-			return c.SendString(BuildPage("Engagements", BuildHtml("engagement_list.html", state.Engagements)))
+			return c.SendString(BuildPage("/", "Engagements", BuildHtml("engagement_list.html", state.Engagements)))
 		}
 
 		state.DeleteEnagement(name)
 
-		return c.SendString(BuildPage("Engagements", BuildHtml("engagement_list.html", state.Engagements)))
+		return c.SendString(BuildPage("/", "Engagements", BuildHtml("engagement_list.html", state.Engagements)))
 	})
 
 
