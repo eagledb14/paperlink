@@ -26,12 +26,12 @@ func Run() {
 
 	app.Static("/style.css", "./tmpl/styles.css")
 
-	app.Static("/tinymce.min.js", "./resources/tinymce/tinymce.min.js")
-	app.Static("/themes/silver/theme.min.js", "./resources/tinymce/themes/silver/theme.min.js")
-	app.Static("/plugins", "./resources/tinymce/plugins")
-	app.Static("/models", "./resources/tinymce/models")
-	app.Static("/icons", "./resources/tinymce/icons")
-	app.Static("/skins", "./resources/tinymce/skins")
+	app.Static("/tinymce.min.js", "./node_modules/tinymce/tinymce.min.js")
+	app.Static("/themes/silver/theme.min.js", "./node_modules/tinymce/themes/silver/theme.min.js")
+	app.Static("/plugins", "./node_modules/tinymce/plugins")
+	app.Static("/models", "./node_modules/tinymce/models")
+	app.Static("/icons", "./node_modules/tinymce/icons")
+	app.Static("/skins", "./node_modules/tinymce/skins")
 
 	app.Listen(":8080")
 }

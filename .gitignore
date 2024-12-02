@@ -27,3 +27,5 @@ go.work.sum
 resources/
 engagements/
 templates/
+node_modules/
+package-lock.json

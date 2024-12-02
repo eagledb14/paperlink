@@ -9,6 +9,9 @@ build:
 run: 
 	@go run .
 
+npm:
+	@npm install
+
 clean:
 	rm paperlink*
 

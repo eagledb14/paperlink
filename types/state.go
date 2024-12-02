@@ -2,7 +2,6 @@ package types
 
 import (
 	"errors"
-	"fmt"
 	"sort"
 
 	"github.com/eagledb14/paperlink/engagement"
@@ -36,7 +35,6 @@ func NewState() *State {
 
 func (s *State) GetEngagement(name string) (*engagement.Engagement, error) {
 	index, exists := s.EngagementMap[name]
-	fmt.Println(index, exists)
 	if !exists || index >= len(s.Engagements) {
 		return nil, errors.New("Missing Engagement")
 	}
