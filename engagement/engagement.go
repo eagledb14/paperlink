@@ -85,16 +85,28 @@ func newDb(folderPath string, name string, contact string, email string) Engagem
 	newEngagement.createTable()
 
 	// create engagement
-	newEngagement.insertEngagement(name, contact, email, newEngagement.TimeStamp)
+	err = newEngagement.insertEngagement(name, contact, email, newEngagement.TimeStamp)
+	if err != nil {
+		panic(fmt.Errorf("error making engagement table: %w", err))
+	}
 
 	// create section
-	createSectionTable(db)
+	err = createSectionTable(db)
+	if err != nil {
+		panic(fmt.Errorf("error making section table: %w", err))
+	}
 
 	// create asset
-	createAssetTable(db)
+	err = createAssetTable(db)
+	if err != nil {
+		panic(fmt.Errorf("error making asset table: %w", err))
+	}
 
 	// create findings
-	createFindingTable(db)
+	err = createFindingTable(db)
+	if err != nil {
+		panic(fmt.Errorf("error making finding table: %w", err))
+	}
 
 	return newEngagement
 }
@@ -192,7 +204,7 @@ name,
 contact,
 email,
 timeStamp
-) VALUES (?,?,?)`, name, contact, email, time.Unix())
+) VALUES (?,?,?,?)`, name, contact, email, time.Unix())
 	return err
 }
 

@@ -2,6 +2,8 @@ package types
 
 import (
 	"errors"
+	"fmt"
+	"sort"
 
 	"github.com/eagledb14/paperlink/engagement"
 )
@@ -17,28 +19,24 @@ type State struct {
 func NewState() *State {
 	newState := State{}
 	newState.Engagements = engagement.LoadEngagements()
+	sortEngagements(newState.Engagements)
+
 	newState.Templates = engagement.LoadTemplates()
+	sortEngagements(newState.Templates)
 
 	newState.EngagementMap = make(map[string]int)
 	newState.TemplateMap = make(map[string]int)
 
-	for i, e := range newState.Engagements {
-		newState.EngagementMap[e.Name] = i
-	}
-	for i, t := range newState.Templates {
-		newState.TemplateMap[t.Name] = i
-	}
+	updateMap(newState.Engagements, newState.EngagementMap)
+	updateMap(newState.Templates, newState.TemplateMap)
 
 	return &newState
 }
 
 
-	// sort.Slice(engagements, func(i, j int) bool {
-	// 	return engagements[j].TimeStamp.Before(engagements[i].TimeStamp)
-	// })
-
 func (s *State) GetEngagement(name string) (*engagement.Engagement, error) {
 	index, exists := s.EngagementMap[name]
+	fmt.Println(index, exists)
 	if !exists || index >= len(s.Engagements) {
 		return nil, errors.New("Missing Engagement")
 	}
@@ -60,13 +58,13 @@ func (s *State) GetTemplate(name string) (*engagement.Engagement, error) {
 }
 
 func (s *State) AddEngagement(newEngagement engagement.Engagement) {
-	s.Engagements = append(s.Engagements, newEngagement)
-	s.EngagementMap[newEngagement.Name] = len(s.Engagements) - 1
+	s.Engagements = append([]engagement.Engagement{newEngagement}, s.Engagements...)
+	updateMap(s.Engagements, s.EngagementMap)
 }
 
 func (s *State) AddTemplate(newTemplate engagement.Engagement) {
-	s.Templates = append(s.Templates, newTemplate)
-	s.TemplateMap[newTemplate.Name] = len(s.Templates) - 1
+	s.Templates = append([]engagement.Engagement{newTemplate}, s.Templates...)
+	updateMap(s.Templates, s.TemplateMap)
 }
 
 func (s *State) DeleteEnagement(name string) {
@@ -74,12 +72,7 @@ func (s *State) DeleteEnagement(name string) {
 	s.Engagements[index].Delete()
 	s.Engagements = append(s.Engagements[:index], s.Engagements[index+1:]...)
 
-	for i, e := range s.Engagements {
-		s.EngagementMap[e.Name] = i
-	}
-	for i, t := range s.Templates {
-		s.TemplateMap[t.Name] = i
-	}
+	updateMap(s.Engagements, s.EngagementMap)
 }
 
 func (s *State) DeleteTemplate(name string) {
@@ -87,11 +80,17 @@ func (s *State) DeleteTemplate(name string) {
 	s.Templates[index].Delete()
 	s.Templates = append(s.Templates[:index], s.Templates[index+1:]...)
 
+	updateMap(s.Templates, s.TemplateMap)
+}
 
-	for i, e := range s.Engagements {
-		s.EngagementMap[e.Name] = i
-	}
-	for i, t := range s.Templates {
-		s.TemplateMap[t.Name] = i
+func sortEngagements(e []engagement.Engagement) {
+	sort.Slice(e, func(i, j int) bool {
+		return e[j].TimeStamp.Before(e[i].TimeStamp)
+	})
+}
+
+func updateMap(engagements []engagement.Engagement, m map[string]int) {
+	for i, e := range engagements {
+		m[e.Name] = i
 	}
 }

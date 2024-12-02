@@ -9,10 +9,14 @@
 
 {{range .Sections}}
 <details hx-target="this">
-	<summary class="contrast outline" role="button">
-		<div role="group">
-			<button class="btn-sm" hx-put="/template/section/up/{{$.Name}}/{{.Key}}" hx-target="body">▲</button>
-			<button class="btn-sm" hx-put="/template/section/down/{{$.Name}}/{{.Key}}" hx-target="body">▼</button>
+	<summary class="contrast outline grid" role="button">
+		<div class="grid">
+			<div role="group">
+				<button class="btn-sm" hx-put="/template/section/up/{{$.Name}}/{{.Key}}" hx-target="body">▲</button>
+				<button class="btn-sm" hx-put="/template/section/down/{{$.Name}}/{{.Key}}" hx-target="body">▼</button>
+			</div>
+			<div></div>
+			<div></div>
 		</div>
 		<h3>{{.Title}}<h3>
 	</summary>

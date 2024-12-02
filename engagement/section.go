@@ -26,7 +26,7 @@ func (e *Engagement) InsertSection(title string, body string) error {
 	var rowCount int
 	err := e.db.QueryRow(`SELECT "index" FROM sections DESC LIMIT 1`).Scan(&rowCount)
 	if err != nil {
-		return err
+		rowCount = 1
 	}
 
 	return e.db.Exec(`INSERT INTO sections(

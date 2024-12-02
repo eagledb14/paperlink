@@ -3,9 +3,14 @@ package main
 import (
 	// "github.com/eagledb14/paperlink/engagement"
 	"github.com/eagledb14/paperlink/net"
+	// "fmt"
+
+	// "github.com/eagledb14/paperlink/types"
 )
 
 func main() {
+	// s := types.NewState()
+	// fmt.Println(s.TemplateMap)
 	// engagement.NewEngagementFromTemplate("test1", "test1", "thing", "other thing")
 	// engagement.NewEngagementFromTemplate("test1", "test2", "thing", "other thing")
 	// engagement.NewEngagementFromTemplate("test1", "test with spaces 1", "thing", "other thing")
