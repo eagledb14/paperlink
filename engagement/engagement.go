@@ -42,11 +42,17 @@ func NewEngagementFromTemplate(templateName string, name string, contact string,
 		fmt.Println(fmt.Errorf("CreateEngagementFromTemplate Copy: %w", err))
 	}
 
-	newEngagement := NewEngagement(name, contact, email)
+	newEngagement, err := loadEngagement(name + ".db", "./engagements/")
+	if err != nil {
+		panic(fmt.Errorf("Broken: %w: %s", err, newEngagement.Name))
+	}
 	newEngagement.deleteEngagement(templateName)
-	if templateName == name {
-		newEngagement.insertEngagement(name, contact, email, time.Now())
-	} 
+
+	newEngagement.Name = name
+	newEngagement.Contact = contact
+	newEngagement.Email = email
+	newEngagement.TimeStamp = time.Now()
+	newEngagement.insertEngagement(name, contact, email, newEngagement.TimeStamp)
 
 	return newEngagement
 }
@@ -161,7 +167,7 @@ func loadEngagement(name string, folderPath string) (Engagement, error) {
 	
 	rows, err := db.Query(`SELECT name, contact, email, timeStamp FROM engagements`)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(fmt.Errorf("load Engagement: %w", err))
 		return Engagement{}, err
 	}
 	defer rows.Close()

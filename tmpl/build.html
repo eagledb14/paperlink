@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+<head>
 	<meta charset="UTF-8">
         <title>Paper Link</title>
         <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
         <link rel="stylesheet" type="text/css" href="/style.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
 
-
 	<script src="/tinymce.min.js" referrerpolicy="origin"></script>
-    </head>
-	<body hx-boost="true">
-		<nav class="bg-primary p-16 f-white">
-			<ul>
-			    <li><a href="/engagement">Engagements</a></li>
-			    <li><a href="/template">Templates</a></li>
-			    <li><a href="/dictionary">Word Dictionary</a></li>
-			    <li><a href="/Profile">Profile</a></li>
-			</ul>
-		</nav>
+</head>
+<body hx-boost="true">
+	<nav class="bg-primary p-16 f-white">
+		<ul>
+		    <li><a href="/engagement">Engagements</a></li>
+		    <li><a href="/template">Templates</a></li>
+		    <li><a href="/dictionary">Word Dictionary</a></li>
+		    <li><a href="/Profile">Profile</a></li>
+		</ul>
+	</nav>
 
-		<main class="container">
-			{{.Directory}}
-			<h1>
-			    {{.Title}}
-			</h1>
-			{{.Body}}
-		</div>
-	</body>
+	<main class="container">
+		{{.Directory}}
+		<h1>
+		    {{.Title}}
+		</h1>
+		{{.Body}}
+	</div>
+</body>
 </html>

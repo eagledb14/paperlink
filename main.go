@@ -2,13 +2,14 @@ package main
 
 import (
 	// "github.com/eagledb14/paperlink/engagement"
+
 	"github.com/eagledb14/paperlink/net"
 	// "fmt"
-
 	// "github.com/eagledb14/paperlink/types"
 )
 
 func main() {
+	// e[0].db.Query(`SELECT name, contact, email, timeStamp FROM engagements`)
 	// s := types.NewState()
 	// fmt.Println(s.TemplateMap)
 	// engagement.NewEngagementFromTemplate("test1", "test1", "thing", "other thing")

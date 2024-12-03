@@ -69,6 +69,43 @@ func Engagement(state *types.State, app *fiber.App) {
 		return c.SendString(BuildPage("/", "Engagements", BuildHtml("engagement_list.html", state.Engagements)))
 	})
 
+	app.Get("/preview/:name", func(c *fiber.Ctx) error {
+		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			c.Redirect("/section/view/"+name)
+		}
 
+		e, err := state.GetEngagement(name)
+		if err != nil {
+			c.Redirect("/section/view/"+name)
+		}
+
+		sections := e.GetSections()
+		document := Render(sections)
+
+		c.Set("Content-Type", "text/html")
+		return c.SendString(document)
+	})
+
+	app.Get("/download/:name", func(c *fiber.Ctx) error {
+		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			c.Redirect("/section/view/"+name)
+		}
+
+		e, err := state.GetEngagement(name)
+		if err != nil {
+			c.Redirect("/section/view/"+name)
+		}
+
+		sections := e.GetSections()
+		document := Render(sections)
+
+		c.Set("Content-Type", "text/html; charset=utf-8") 
+		c.Set("Content-Disposition", `attachment; filename="` + name + ".html" +`"`)
+		return c.SendString(document)
+	})
 }
 

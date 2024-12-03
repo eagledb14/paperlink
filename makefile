@@ -5,12 +5,14 @@ build:
 	zip -r paperlink.zip ./resources ./paperlink
 	rm paperlink
 
-
 run: 
 	@go run .
 
 npm:
 	@npm install
+
+test:
+	go test .
 
 clean:
 	rm paperlink*

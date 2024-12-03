@@ -1,8 +1,8 @@
 
 <nav class="bg-primary p-16 f-white">
 	<ul>
-		<li><button class="btn btn-danger" hx-delete="/template/{{.Name}}" hx-target="body" hx-confirm='Are you sure you want to delete "{{.Name}}"'>Delete Template</button></li>
 		<li><button class="btn btn-info w-25 mb-5" hx-post="/template/section/new/{{.Name}}" hx-target="body" hx-prompt="Enter Section Name">New Section</button></li>
+		<li><button class="btn btn-danger" hx-delete="/template/{{.Name}}" hx-target="body" hx-confirm='Are you sure you want to delete "{{.Name}}"'>Delete Template</button></li>
 	<ul>
 </nav>
 <br>
