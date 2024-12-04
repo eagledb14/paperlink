@@ -24,6 +24,7 @@ func Run() {
 	Section(state, app)
 	Finding(state, app)
 	Asset(state, app)
+	Code(state, app)
 	Template(state, app)
 
 	app.Static("/style.css", "./tmpl/styles.css")

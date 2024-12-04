@@ -6,7 +6,7 @@ import (
 	"github.com/eagledb14/paperlink/engagement"
 )
 
-func Render(sections []engagement.Section) string {
+func Render(sections []engagement.Section, codes []engagement.Code) string {
 	builder := strings.Builder{}
 
 	for _, section := range sections {
@@ -22,5 +22,11 @@ func Render(sections []engagement.Section) string {
 		Document: builder.String(),
 	}
 
-	return BuildText("render.html", data)
+	document := BuildText("render.html", data)
+
+	for _, code := range codes {
+		document = strings.ReplaceAll(document, "%%" + code.Code + "%%", code.Paste)
+	}
+
+	return document
 }

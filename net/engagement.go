@@ -82,7 +82,8 @@ func Engagement(state *types.State, app *fiber.App) {
 		}
 
 		sections := e.GetSections()
-		document := Render(sections)
+		codes := e.GetCodes()
+		document := Render(sections, codes)
 
 		c.Set("Content-Type", "text/html")
 		return c.SendString(document)
@@ -101,7 +102,8 @@ func Engagement(state *types.State, app *fiber.App) {
 		}
 
 		sections := e.GetSections()
-		document := Render(sections)
+		codes := e.GetCodes()
+		document := Render(sections, codes)
 
 		c.Set("Content-Type", "text/html; charset=utf-8") 
 		c.Set("Content-Disposition", `attachment; filename="` + name + ".html" +`"`)

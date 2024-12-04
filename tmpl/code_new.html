@@ -1,0 +1,12 @@
+<form hx-post="/code/new/{{.}}" hx-target="body">
+	<div>
+		<label for="code">Code</label>
+		<input type="text" name="code" id="code" required>
+	</div>
+	<div>
+		<label for="paste">Paste</label>
+		<textarea name="paste" id="paste" required></textarea>
+	</div>
+
+	<button type="submit">></button>
+</form>

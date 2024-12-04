@@ -6,7 +6,7 @@
 		<li><a href="/finding/list/{{.Name}}">Findings</a></li>
 		<li><a href="/asset/list/{{.Name}}">Assets</a></li>
 		<li><a href="/code/list/{{.Name}}">Short Codes</a></li>
-		<li><button class="click" hx-post="{{.New}}" hx-target="body" hx-prompt="Enter Name">{{.Prompt}}</button></li>
+		<li><button class="click" hx-get="{{.New}}" hx-target="body">{{.Prompt}}</button></li>
 		<li>
 			<details class="dropdown">
 				<summary role="button">

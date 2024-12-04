@@ -117,6 +117,13 @@ func newDb(folderPath string, name string, contact string, email string) Engagem
 		panic(fmt.Errorf("error making finding table: %w", err))
 	}
 
+	// create short codes
+	err = createCodeTable(db)
+	// TODO: also need to insert the default codes like contact and name of the place
+	if err != nil {
+		panic(fmt.Errorf("error making code table: %w", err))
+	}
+
 	return newEngagement
 }
 

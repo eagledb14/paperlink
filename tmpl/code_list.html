@@ -1,0 +1,18 @@
+<table>
+	<thead>
+		<tr>
+			<th>Code</th>
+			<th>Paste</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		{{range .Codes}}
+		<tr hx-target="this">
+			<td>{{.Code}}</td>
+			<td>{{.Paste}}</td>
+			<td><button class="bg-red" hx-delete="/code/{{$.EngagementName}}/{{.Key}}">-</button></td>
+		</tr>
+		{{end}}
+	</tbody>
+</table>
