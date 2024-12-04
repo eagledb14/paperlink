@@ -97,7 +97,6 @@ func (e* Engagement) GetFinding(key int) Finding {
 func (e* Engagement) GetFindingsWithAsset(key int) []Finding {
 	rows, err := e.db.Query(`SELECT key, severity, timeStamp, title, body, dictionaryKey, assetKey FROM findings WHERE assetKey = ?`, key)
 	if err != nil {
-		fmt.Println("Get Findings", err)
 		return []Finding{}
 	}
 	defer rows.Close()
