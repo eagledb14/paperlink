@@ -1,7 +1,6 @@
 package engagement
 
-import (
-)
+import "fmt"
 
 type Asset struct {
 	Key int
@@ -48,6 +47,16 @@ func (e* Engagement) GetAssets() []Asset {
 	}
 
 	return assets
+}
+
+func (e* Engagement) GetAsset(key int) Asset {
+	row := e.db.QueryRow(`SELECT key, parent, name, assetType FROM assets WHERE key = ?`, key)
+	newAsset := Asset{}
+	if err := row.Scan(&newAsset.Key, &newAsset.Parent, &newAsset.Name, &newAsset.AssetType); err != nil {
+		fmt.Println("GetAsset: ", err)
+	}
+
+	return newAsset
 }
 
 func (e *Engagement) DeleteAsset(key int) error {

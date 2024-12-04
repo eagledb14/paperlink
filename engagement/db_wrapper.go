@@ -35,10 +35,28 @@ func (d *DbWrapper) Exec(query string, args ...any) error {
 	return err
 }
 
-func (d *DbWrapper) Query(query string) (*sql.Rows, error) {
+func (d *DbWrapper) ExecIndex(query string, args ...any) (int, error) {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+
+	result, err := d.db.Exec(query, args...)
+	if err != nil {
+		return 0, err
+	}
+
+	// Get the ID of the last inserted row
+	lastInsertID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(lastInsertID), nil
+}
+
+func (d *DbWrapper) Query(query string, args ...any) (*sql.Rows, error) {
 	d.mutex.RLock()
 	defer d.mutex.RUnlock()
-	return d.db.Query(query)
+	return d.db.Query(query, args...)
 }
 
 func (d *DbWrapper) QueryRow(query string, args ...any) *sql.Row {

@@ -3,23 +3,23 @@
 <nav class="bg-primary p-16 f-white">
 	<ul>
 		<li><a href="/section/view/{{.Name}}">Narrative</a></li>
-		<li><a href="/finding/view/{{.Name}}">Findings</a></li>
+		<li><a href="/finding/list/{{.Name}}">Findings</a></li>
 		<li><a href="/asset/view/{{.Name}}">Assets</a></li>
 		<li><a href="/code/view/{{.Name}}">Short Codes</a></li>
+		<li><button class="click" hx-post="{{.New}}" hx-target="body" hx-prompt="Enter Section Name">{{.Prompt}}</button></li>
 		<li>
 			<details class="dropdown">
 				<summary role="button">
 					+
 				</summary>
 				<ul class="dropdown-menu">
-					<li><a class="click" hx-post="{{.New}}" hx-target="body" hx-prompt="Enter Section Name">{{.Prompt}}</a></li>
 					<li><a class="click" href="/preview/{{.Name}}" target="_blank">Preview</a></li>
 					<li><a class="click" href="/download/{{.Name}}" target="_blank">Download</a></li>
 					<li><a class="bg-red click f-black" hx-delete="/engagement/{{.Name}}" hx-target="body" hx-confirm='Are you sure you want to delete "{{.Name}}"'>Delete Engagement</a></li>
 				</ul>
 
 			</details>
-	<ul>
+	</ul>
 </nav>
 
 <br>

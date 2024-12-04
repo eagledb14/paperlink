@@ -1,0 +1,110 @@
+<form hx-post="/finding/edit/{{.EngagementName}}/{{.Finding.Key}}" hx-target="body">
+	<div>
+		<label for="name">Finding Title</label>
+		<input type="text" name="name" id="name" value="{{.Title}}" required>
+	</div>
+	<div>
+		<label for="severity">Severity</label>
+		<select name="severity" id="severity" required>
+			<option selected diabled value="">Select Severity</option>
+			<option value="0">Info</option>
+			<option value="1">Low</option>
+			<option value="2">Medium</option>
+			<option value="3">High</option>
+			<option value="4">Critical</option>
+		</select>
+	</div>
+	<div>
+		<label for="asset">Asset</label>
+		<select name="asset" id="asset">
+			<option selected diabled value="">Select Asset</option>
+			{{range .Assets}}
+			<option value="{{.Key}}">{{.Name}}</option>
+			{{end}}
+		</select>
+	</div>
+	<div>
+		<label for="newAsset">New Asset</label>
+		<input type="text" name="newAsset" id="newAsset">
+	</div>
+	<div>
+		<label for="dictionary">Tag??</label>
+		<select name="dictionary" id="dictionary">
+			<option selected disabled value=""></option>
+			<!--Need to add the dictionary tag stuff here-->
+		</select>
+	</div>
+	<div class="editor"></div>
+	<button type="submit">></button>
+</form>
+
+
+<script>
+async function init() {
+	tinymce.remove('#editor')
+	tinymce.init({
+	  selector: '#editor',
+	  license_key: 'gpl',
+	  promotion: false,
+	  plugins: 'preview importcss searchreplace autolink directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
+	  menubar: 'edit view insert format tools table help',
+	  toolbar: "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | pagebreak anchor codesample | ltr rtl",
+	  image_advtab: true,
+	  importcss_append: true,
+	  file_picker_callback: (callback, value, meta) => {
+	    const input = document.createElement('input');
+	    input.type = 'file';
+
+	    if (meta.filetype === 'image') {
+		input.accept = 'image/*';
+	    } else if (meta.filetype === 'media') {
+		input.accept = 'video/*, audio/*';
+	    } else {
+		input.accept = '*/*';
+	    }
+
+	    input.onchange = (event) => {
+		const file = event.target.files[0];
+		if (file) {
+		    const reader = new FileReader();
+
+		    reader.onload = (e) => {
+			callback(e.target.result, { alt: file.name });
+		    };
+
+		    reader.readAsDataURL(file);
+		}
+	    };
+
+	    input.click();
+	  },  
+	  height: 600,
+	  quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+	  noneditable_class: 'mceNonEditable',
+	  toolbar_mode: 'sliding',
+	  contextmenu: 'link image table',
+	  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+	  setup: function (editor) {
+	      editor.on('blur', function () {
+		const content = editor.getContent();
+
+		var xhr = new XMLHttpRequest();
+		xhr.open("PUT", "/finding/body/{{$.EngagementName}}/{{.Finding.Key}}", true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send(JSON.stringify({
+		    content: content,
+		}));
+	      });
+	  },
+	  init_instance_callback: function (editor) {
+	    editor.setContent(`{{.Finding.Body}}`);
+	  },
+	});
+}
+
+//document.addEventListener('DOMContentLoaded', init);
+
+document.addEventListener('htmx:afterSettle', () => {
+	init();
+});
+</script>

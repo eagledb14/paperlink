@@ -1,0 +1,29 @@
+<table>
+	<thead>
+		<tr>
+			<th>Title</th>
+			<th>Severity</th>
+			<th>Date Found</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{range .Findings}}
+		<tr class="click" hx-get="/finding/view/{{$.EngagementName}}/{{.Key}}" hx-target="body" hx-push-url="true">
+			<td>{{.Title}}</td>
+			{{if eq .Severity 0}}
+			<td class="bg-info">info</td>
+			{{else if eq .Severity 1}}
+			<td class="bg-low">low</td>
+			{{else if eq .Severity 2}}
+			<td class="bg-medium">medium</td>
+			{{else if eq .Severity 3}}
+			<td class="bg-high">high</td>
+			{{else if eq .Severity 4}}
+			<td class="bg-critical">Critical</td>
+			{{end}}
+
+			<td>{{.TimeStamp}}</td>
+		<tr>
+		{{end}}
+	</tbody>
+</table>
