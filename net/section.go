@@ -123,7 +123,7 @@ func Section(state *types.State, app *fiber.App) {
 		bottomSection := e.GetSection(key)
 		topSection := e.GetSectionFromIndex(bottomSection.Index - 1)
 		if topSection.Key == 0 {
-			return c.SendString(BuildPage("/ engagements / narrative / ", name, getTemplateView(state, name)))
+			return c.SendString(BuildPage("/ engagements / narrative / ", name, getSectionView(state, name)))
 		}
 		err = e.UpdateSection(bottomSection.Key, topSection.Index, bottomSection.Title, bottomSection.Body)
 		err = e.UpdateSection(topSection.Key, bottomSection.Index, topSection.Title, topSection.Body)
@@ -148,7 +148,7 @@ func Section(state *types.State, app *fiber.App) {
 
 		bottomSection := e.GetSectionFromIndex(topSection.Index + 1)
 		if bottomSection.Key == 0 {
-			return c.SendString(BuildPage("/ engagements / narrative / ", name, getTemplateView(state, name)))
+			return c.SendString(BuildPage("/ engagements / narrative / ", name, getSectionView(state, name)))
 		}
 		err = e.UpdateSection(topSection.Key, bottomSection.Index, topSection.Title, topSection.Body)
 		err = e.UpdateSection(bottomSection.Key, topSection.Index, bottomSection.Title, bottomSection.Body)

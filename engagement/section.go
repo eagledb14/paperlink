@@ -1,9 +1,11 @@
 package engagement
 
 import (
+	"fmt"
+	"html"
 	"sort"
 	"strings"
-	"html"
+
 	"github.com/microcosm-cc/bluemonday"
 )
 
@@ -25,10 +27,10 @@ body TEXT
 }
 
 func (e *Engagement) InsertSection(title string, body string) error {
-	var rowCount int
-	err := e.db.QueryRow(`SELECT "index" FROM sections DESC LIMIT 1`).Scan(&rowCount)
+	rowCount := 0
+	err := e.db.QueryRow(`SELECT "index" FROM sections ORDER BY key DESC LIMIT 1`).Scan(&rowCount)
 	if err != nil {
-		rowCount = 1
+		fmt.Println(err)
 	}
 
 	return e.db.Exec(`INSERT INTO sections(
