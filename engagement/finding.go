@@ -3,6 +3,8 @@ package engagement
 import (
 	"fmt"
 	"time"
+	"html"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 type Finding struct {
@@ -32,6 +34,10 @@ assetKey int
 }
 
 func (e *Engagement) InsertFinding(severity int, timeStamp time.Time, title string, body string, dictionaryKey int, assetKey int) (int, error) {
+	policy := bluemonday.UGCPolicy()
+	policy.AllowStyles()
+	body = policy.Sanitize(body)
+
 	return e.db.ExecIndex(`INSERT INTO findings(
 severity,
 timeStamp,
@@ -39,15 +45,18 @@ title,
 body,
 dictionaryKey,
 assetKey
-) VALUES (?, ?, ?, ?, ?, ?)`, severity, timeStamp.Unix(), title, body, dictionaryKey, assetKey)
+) VALUES (?, ?, ?, ?, ?, ?)`, severity, timeStamp.Unix(), html.EscapeString(title), body, dictionaryKey, assetKey)
 }
 
 func (e *Engagement) UpdateFinding(key int, severity int, timeStamp time.Time, title string, body string, dictionaryKey int, assetKey int) error {
-	return e.db.Exec(`UPDATE findings SET severity = ?, timeStamp = ?, title = ?,  body= ?, dictionaryKey = ?, assetKey = ? WHERE "key" = ?`, severity, timeStamp.Unix(), title, body, dictionaryKey, assetKey, key)
+	policy := bluemonday.UGCPolicy()
+	policy.AllowStyles()
+	body = policy.Sanitize(body)
+	return e.db.Exec(`UPDATE findings SET severity = ?, timeStamp = ?, title = ?,  body= ?, dictionaryKey = ?, assetKey = ? WHERE "key" = ?`, 
+		severity, timeStamp.Unix(), 
+		html.EscapeString(html.UnescapeString(title)), body, dictionaryKey, assetKey, key)
 }
 
-
-// key, severity, timeStamp, title, body, dictionaryKey, assetKey 
 
 func (e* Engagement) GetFindings() []Finding {
 	rows, err := e.db.Query(`SELECT key, severity, timeStamp, title, body, dictionaryKey, assetKey FROM findings`)

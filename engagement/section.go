@@ -3,6 +3,8 @@ package engagement
 import (
 	"sort"
 	"strings"
+	"html"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 
@@ -33,12 +35,16 @@ func (e *Engagement) InsertSection(title string, body string) error {
 title,
 "index",
 body
-) VALUES (?, ?, ?)`, title, rowCount + 1, body)
+) VALUES (?, ?, ?)`,html.EscapeString(title), rowCount + 1, body)
 }
 
 func (e *Engagement) UpdateSection(key int, index int, title string, body string) error {
 	strings.ReplaceAll(body, "`", "'")
-	return e.db.Exec(`UPDATE sections SET "index" = ?, title = ?, body = ? WHERE "key" = ?`, index, title, body, key)
+	policy := bluemonday.UGCPolicy()
+	policy.AllowStyles()
+	body = policy.Sanitize(body)
+	return e.db.Exec(`UPDATE sections SET "index" = ?, title = ?, body = ? WHERE "key" = ?`,
+		index, html.EscapeString(html.UnescapeString(title)), body, key)
 }
 
 func (e* Engagement) GetSections() []Section {

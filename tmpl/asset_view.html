@@ -1,0 +1,30 @@
+<div class="grid">
+	<div></div>
+	<div></div>
+	<div></div>
+	<div></div>
+	<div></div>
+	<div role="group">
+		<button hx-get="/asset/edit/{{$.EngagementName}}/{{.Asset.Key}}" hx-target="body">Edit</button>
+		<button class="bg-red" hx-delete="/asset/{{$.EngagementName}}/{{.Asset.Key}}" hx-confirm='Are you sure you want to delete "{{.Asset.Name}}"' hx-target="body">Delete</button>
+	</div>
+</div>
+{{if ne .Asset.Parent ""}}
+<h3>Parent</h3>
+{{.Asset.Parent}}
+<br>
+<br>
+{{end}}
+
+
+{{if ne .Asset.AssetType ""}}
+<h3>Type</h3>
+{{.Asset.AssetType}}
+<br>
+<br>
+{{end}}
+
+<h3>Findings on this Asset</h3>
+{{range .Findings}}
+<p><a href="/finding/view/{{$.EngagementName}}/{{.Key}}">{{.Title}}</a></p>
+{{end}}

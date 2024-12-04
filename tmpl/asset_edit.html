@@ -1,0 +1,15 @@
+<form hx-post="/asset/edit/{{.EngagementName}}/{{.Asset.Key}}" hx-target="body">
+	<div>
+		<label for="name">Asset Name</label>
+		<input type="text" name="name" id="name" value="{{.Asset.Name}}" required>
+	</div>
+	<div>
+		<label for="name">Parent Name</label>
+		<input type="text" name="parent" id="parent" value="{{.Asset.Parent}}" required>
+	</div>
+	<div>
+		<label for="name">Asset Type</label>
+		<input type="text" name="type" id="type" value="{{.Asset.AssetType}}" required>
+	</div>
+	<button type="submit">></button>
+</form

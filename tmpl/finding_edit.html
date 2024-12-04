@@ -6,20 +6,29 @@
 	<div>
 		<label for="severity">Severity</label>
 		<select name="severity" id="severity" required>
-			<option selected diabled value="">Select Severity</option>
-			<option value="0">Info</option>
-			<option value="1">Low</option>
-			<option value="2">Medium</option>
-			<option value="3">High</option>
-			<option value="4">Critical</option>
+			<option {{if eq $.Finding.Severity 0}}selected{{end}} value="0">Info</option>
+			<option {{if eq $.Finding.Severity 1}}selected{{end}} value="1">Low</option>
+			<option {{if eq $.Finding.Severity 2}}selected{{end}} value="2">Medium</option>
+			<option {{if eq $.Finding.Severity 3}}selected{{end}} value="3">High</option>
+			<option {{if eq $.Finding.Severity 4}}selected{{end}} value="4">Critical</option>
 		</select>
 	</div>
 	<div>
 		<label for="asset">Asset</label>
 		<select name="asset" id="asset">
-			<option selected diabled value="">Select Asset</option>
+			{{if eq $.Finding.AssetKey 0}}
+				<option selected diabled value="">Select Asset</option>
+			{{else}}
+				<option diabled value="">Select Asset</option>
+			{{end}}
+
 			{{range .Assets}}
-			<option value="{{.Key}}">{{.Name}}</option>
+
+			{{if eq $.Finding.AssetKey .Key}}
+				<option selected value="{{.Key}}">{{.Name}}</option>
+			{{else}}
+				<option value="{{.Key}}">{{.Name}}</option>
+			{{end}}
 			{{end}}
 		</select>
 	</div>

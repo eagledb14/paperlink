@@ -1,7 +1,6 @@
 package net
 
 import (
-	"fmt"
 	"net/url"
 	"strconv"
 	"time"
@@ -20,7 +19,6 @@ func Finding(state *types.State, app *fiber.App) {
 			return c.SendStatus(404)
 		}
 
-
 		e, err := state.GetEngagement(name)
 		if err != nil {
 			return c.SendStatus(404)
@@ -34,7 +32,7 @@ func Finding(state *types.State, app *fiber.App) {
 			Findings: e.GetFindings(),
 		}
 
-		body := BuildHtml("finding_list.html", findingData)
+		body := BuildText("finding_list.html", findingData)
 
 		return c.SendString(BuildPage("/ engagements / findings /", name, getFindingView(name, body)))
 	})
@@ -75,7 +73,6 @@ func Finding(state *types.State, app *fiber.App) {
 			return c.SendString(err.Error())
 		}
 		f := e.GetFinding(keyInt)
-		fmt.Println(keyInt, f)
 
 		findingData := struct {
 			Title string
@@ -115,7 +112,14 @@ func Finding(state *types.State, app *fiber.App) {
 		f := e.GetFinding(keyInt)
 		_ = f
 
-		assetKey, err := strconv.Atoi(c.FormValue("asset"))
+		assetKey := 0
+		newAsset := c.FormValue("newAsset")
+		if newAsset != "" {
+			assetKey, err = e.InsertAsset("", newAsset,"")
+		} else {
+			assetKey, err = strconv.Atoi(c.FormValue("asset"))
+		}
+
 		dictionaryKey, err := strconv.Atoi(c.FormValue("dictionary"))
 		severity, err := strconv.Atoi(c.FormValue("severity"))
 
@@ -156,9 +160,9 @@ func Finding(state *types.State, app *fiber.App) {
 			Asset: e.GetAsset(f.AssetKey),
 		}
 
-		body := BuildHtml("finding_view.html", findingData)
+		body := BuildText("finding_view.html", findingData)
 
-		return c.SendString(BuildPage("/ engagements / findings / " + name, f.Title, getFindingView(name, body)))
+		return c.SendString(BuildPage("/ engagements / findings / " + name + " /", f.Title, getFindingView(name, body)))
 	})
 
 	app.Delete("/finding/:name/:key", func(c *fiber.Ctx) error {
@@ -180,7 +184,18 @@ func Finding(state *types.State, app *fiber.App) {
 			return c.SendString(err.Error())
 		}
 		e.DeleteFinding(keyInt)
-		return c.Redirect("/finding/list"+name)
+
+		findingData := struct {
+			EngagementName string
+			Findings []engagement.Finding
+		} {
+			EngagementName: name,
+			Findings: e.GetFindings(),
+		}
+
+		body := BuildText("finding_list.html", findingData)
+
+		return c.SendString(BuildPage("/ engagements / findings /", name, getFindingView(name, body)))
 	})
 
 }

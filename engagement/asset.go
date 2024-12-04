@@ -1,6 +1,9 @@
 package engagement
 
-import "fmt"
+import (
+	"fmt"
+	"html"
+)
 
 type Asset struct {
 	Key int
@@ -18,16 +21,20 @@ assetType TEXT
 )`)
 }
 
-func (e *Engagement) InsertAsset(parent string, name string, assetType string) error {
-	return e.db.Exec(`INSERT INTO assets(
+func (e *Engagement) InsertAsset(parent string, name string, assetType string) (int, error) {
+	return e.db.ExecIndex(`INSERT INTO assets(
 parent,
 name,
 assetType
-) VALUES (?, ?, ?)`, parent, name, assetType)
+) VALUES (?, ?, ?)`, html.EscapeString(parent), html.EscapeString(name), html.EscapeString(assetType))
 }
 
 func (e *Engagement) UpdateAsset(key int, parent string, name string, assetType string) error {
-	return e.db.Exec(`UPDATE assets SET parent = ?, name = ?, assetType = ? WHERE "key" = ?`, parent, name, assetType, key)
+	return e.db.Exec(`UPDATE assets SET parent = ?, name = ?, assetType = ? WHERE "key" = ?`, 
+		html.EscapeString(html.UnescapeString(parent)), 
+		html.EscapeString(html.UnescapeString(name)), 
+		html.EscapeString(html.UnescapeString(assetType)),
+		key)
 }
 
 func (e* Engagement) GetAssets() []Asset {
@@ -53,7 +60,9 @@ func (e* Engagement) GetAsset(key int) Asset {
 	row := e.db.QueryRow(`SELECT key, parent, name, assetType FROM assets WHERE key = ?`, key)
 	newAsset := Asset{}
 	if err := row.Scan(&newAsset.Key, &newAsset.Parent, &newAsset.Name, &newAsset.AssetType); err != nil {
-		fmt.Println("GetAsset: ", err)
+		if err.Error() != "sql: no rows in result set" {
+			fmt.Println("GetAsset: ", err)
+		}
 	}
 
 	return newAsset

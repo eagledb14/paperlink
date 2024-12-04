@@ -1,6 +1,5 @@
 <div class="grid">
 	<div class="centered">
-
 		{{if eq .Finding.Severity 0}}
 		<button class="no-click b-none bg-info">Severity: Info</button>
 		{{else if eq .Finding.Severity 1}}
@@ -10,7 +9,7 @@
 		{{else if eq .Finding.Severity 3}}
 		<button class="no-click b-none bg-high">Severity: High</button>
 		{{else if eq .Finding.Severity 4}}
-		<button class="no-click b-none bg-critical" disabled>Severity: Critical</button>
+		<button class="no-click b-none bg-critical">Severity: Critical</button>
 		{{end}}
 	</div>
 	<div></div>
@@ -20,18 +19,18 @@
 
 	<div role="group">
 		<button hx-get="/finding/edit/{{$.EngagementName}}/{{.Finding.Key}}" hx-target="body">Edit</button>
-		<button class="bg-red" hx-delete="finding/{{$.EngagementName}}/{{.Finding.Key}}" hx-confirm='Are you sure you want to delete "{{.Finding.Title}}"'>Delete</button>
+		<button class="bg-red" hx-delete="/finding/{{$.EngagementName}}/{{.Finding.Key}}" hx-confirm='Are you sure you want to delete "{{.Finding.Title}}"' hx-target="body">Delete</button>
 	</div>
 </div>
 <br>
 <div class="grid centered">
-	<h3>Tagged Asset</h3>
-	{{if eq .Asset.Key 0}}
-	{{else}}
-		{{.Asset.Name}}
-<!--may want to include a link here to the asset	-->
-	{{.Asset}}
-	{{end}}
+	<div>
+		<h3>Tagged Asset</h3>
+		{{if eq .Asset.Key 0}}
+		{{else}}
+			<a href="/asset/view/{{$.EngagementName}}/{{.Asset.Key}}">{{.Asset.Name}}</a>
+		{{end}}
+	</div>
 
 	<h3>Tagged Description</h3>
 	<!--name-->
@@ -42,7 +41,7 @@
 
 <br>
 
-<h3>Description</h3>
+<h3>Summary</h3>
 <article>
 	{{.Finding.Body}}
 </article>

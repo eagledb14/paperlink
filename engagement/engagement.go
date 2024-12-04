@@ -2,6 +2,7 @@ package engagement
 
 import (
 	"fmt"
+	"html"
 	"os"
 	"strings"
 	"time"
@@ -25,6 +26,8 @@ func NewEngagement(name string, contact string, email string) Engagement {
 }
 
 func NewEngagementFromTemplate(templateName string, name string, contact string, email string) Engagement {
+	name = html.EscapeString(name)
+	templateName = html.EscapeString(templateName)
 	copyPath := "./templates/" + templateName + ".db"
 	destPath := "./engagements/" + name + ".db"
 
@@ -48,9 +51,9 @@ func NewEngagementFromTemplate(templateName string, name string, contact string,
 	}
 	newEngagement.deleteEngagement(templateName)
 
-	newEngagement.Name = name
-	newEngagement.Contact = contact
-	newEngagement.Email = email
+	newEngagement.Name = html.EscapeString(name)
+	newEngagement.Contact = html.EscapeString(contact)
+	newEngagement.Email = html.EscapeString(email)
 	newEngagement.TimeStamp = time.Now()
 	newEngagement.insertEngagement(name, contact, email, newEngagement.TimeStamp)
 

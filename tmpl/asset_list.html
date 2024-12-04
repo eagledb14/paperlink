@@ -1,0 +1,18 @@
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Parent</th>
+			<th>Type</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{range .Assets}}
+		<tr class="click" hx-get="/asset/view/{{$.EngagementName}}/{{.Key}}" hx-target="body" hx-push-url="true">
+			<td>{{.Name}}</td>
+			<td>{{.Parent}}</td>
+			<td>{{.AssetType}}</td>
+		</tr>
+		{{end}}
+	</tbody>
+</table>
