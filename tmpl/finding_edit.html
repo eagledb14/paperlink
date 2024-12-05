@@ -1,4 +1,4 @@
-<form hx-post="/finding/edit/{{.EngagementName}}/{{.Finding.Key}}" hx-target="body">
+<form hx-post="/finding/edit/{{.EngagementName}}/{{.Finding.Key}}" hx-target="body" id="findingForm" hx-vals="js:{body: getMce()}">
 	<div>
 		<label for="name">Finding Title</label>
 		<input type="text" name="name" id="name" value="{{.Title}}" required>
@@ -39,17 +39,39 @@
 	<div>
 		<label for="dictionary">Tag??</label>
 		<select name="dictionary" id="dictionary">
-			<option selected disabled value=""></option>
+			<option selected disabled value="">Select the Thing</option>
 			<!--Need to add the dictionary tag stuff here-->
 		</select>
 	</div>
-	<div class="editor"></div>
+	<div>
+		<label for="editor">Summary</label>
+		<textarea id="editor"></textarea>
+	</div>
+	<br>
 	<button type="submit">></button>
 </form>
 
 
 <script>
+
+function getMce() {
+	return tinymce.get('editor').getContent();
+}
+//document.getElementById('findingForm').addEventListener('submit', function(event) {
+//	event.preventDefault();
+//
+//	const mceData = tinymce.get('editor').getContent();
+//	const form = event.target
+//	const formData = new FormData(form);
+//	formData.append('body', mceData);
+//
+//	htmx.ajax('POST', form.action, {
+//		values: Object.fromEntries(formData)
+//	});
+//});
+
 async function init() {
+
 	tinymce.remove('#editor')
 	tinymce.init({
 	  selector: '#editor',
@@ -94,16 +116,16 @@ async function init() {
 	  contextmenu: 'link image table',
 	  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
 	  setup: function (editor) {
-	      editor.on('blur', function () {
-		const content = editor.getContent();
-
-		var xhr = new XMLHttpRequest();
-		xhr.open("PUT", "/finding/body/{{$.EngagementName}}/{{.Finding.Key}}", true);
-		xhr.setRequestHeader('Content-Type', 'application/json');
-		xhr.send(JSON.stringify({
-		    content: content,
-		}));
-	      });
+		//     editor.on('blur', function () {
+		//const content = editor.getContent();
+		//
+		//var xhr = new XMLHttpRequest();
+		//xhr.open("PUT", "/finding/body/{{$.EngagementName}}/{{.Finding.Key}}", true);
+		//xhr.setRequestHeader('Content-Type', 'application/json');
+		//xhr.send(JSON.stringify({
+		//    content: content,
+		//}));
+		//     });
 	  },
 	  init_instance_callback: function (editor) {
 	    editor.setContent(`{{.Finding.Body}}`);
@@ -111,7 +133,7 @@ async function init() {
 	});
 }
 
-//document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', init);
 
 document.addEventListener('htmx:afterSettle', () => {
 	init();

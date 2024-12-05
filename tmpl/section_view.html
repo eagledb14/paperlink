@@ -15,7 +15,7 @@
 		<div role="group">
 			<button>Save</button>
 			<button hx-post="/section/update/{{$.EngagementName}}/{{.Key}}" hx-target="body" hx-prompt="Enter Section Name">Rename</button>
-			<button hx-delete="/section/{{$.EngagementName}}/{{.Key}}" hx-confirm='Are you sure you want to delete "{{.Title}}"' hx-swap="outerHTML" class="btn btn-danger px-4 py-2">Delete</button>
+			<button hx-delete="/section/{{$.EngagementName}}/{{.Key}}" hx-confirm='Are you sure you want to delete "{{.Title}}"' hx-swap="outerHTML" class="bg-red">Delete</button>
 		</div>
 	    <div id="editor{{.Key}}"></div>
 	</article>

@@ -6,7 +6,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/microcosm-cc/bluemonday"
 )
 
 
@@ -42,9 +41,12 @@ body
 
 func (e *Engagement) UpdateSection(key int, index int, title string, body string) error {
 	strings.ReplaceAll(body, "`", "'")
-	policy := bluemonday.UGCPolicy()
-	policy.AllowStyles()
-	body = policy.Sanitize(body)
+
+	// policy := bluemonday.UGCPolicy()
+	// policy.AllowStyles()
+	// policy.AllowElements("img")
+	// policy.AllowAttrs("src").OnElements("img")
+	// body = policy.Sanitize(body)
 	return e.db.Exec(`UPDATE sections SET "index" = ?, title = ?, body = ? WHERE "key" = ?`,
 		index, html.EscapeString(html.UnescapeString(title)), body, key)
 }
