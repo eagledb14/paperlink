@@ -12,7 +12,6 @@ func Run() {
 
 	app := fiber.New()
 
-
 	app.Get("/", func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "text/html")
 		return c.Redirect("/engagement")

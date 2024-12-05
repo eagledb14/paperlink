@@ -1,8 +1,8 @@
 
 <nav class="bg-primary p-16 f-white">
 	<ul>
-		<li><button class="btn btn-info w-25 mb-5" hx-post="/template/section/new/{{.Name}}" hx-target="body" hx-prompt="Enter Section Name">New Section</button></li>
-		<li><button class="btn btn-danger" hx-delete="/template/{{.Name}}" hx-target="body" hx-confirm='Are you sure you want to delete "{{.Name}}"'>Delete Template</button></li>
+		<li><button hx-post="/template/section/new/{{.Name}}" hx-target="body" hx-prompt="Enter Section Name">New Section</button></li>
+		<li><button class="bg-red" hx-delete="/template/{{.Name}}" hx-target="body" hx-confirm='Are you sure you want to delete "{{.Name}}"'>Delete Template</button></li>
 	</ul>
 </nav>
 <br>
@@ -24,7 +24,7 @@
 		<div role="group">
 			<button>Save</button>
 			<button hx-post="/template/section/update/{{$.Name}}/{{.Key}}" hx-target="body" hx-prompt="Enter Section Name">Rename</button>
-			<button hx-delete="/template/section/{{$.Name}}/{{.Key}}" hx-confirm='Are you sure you want to delete "{{.Title}}"' hx-swap="outerHTML" class="btn btn-danger px-4 py-2">Delete</button>
+			<button class="bg-red" hx-delete="/template/section/{{$.Name}}/{{.Key}}" hx-confirm='Are you sure you want to delete "{{.Title}}"' hx-swap="outerHTML">Delete</button>
 		</div>
 		<div id="editor{{.Key}}"></div>
 	</article>
