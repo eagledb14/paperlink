@@ -1,0 +1,11 @@
+<form hx-post="/dictionary/new" hx-target="body">
+	<div>
+		<label for="word">Word</label>
+		<input type="text" name="word" value="{{.Word}}" required>
+	</div>
+	<div>
+		<label for="definition">Definitnion</label>
+		<textarea type="text" name="definition" value="{{.Definition}}" required></textarea>
+	</div>
+	<button type="submit">></button>
+</form>

@@ -33,12 +33,6 @@ assetKey int
 }
 
 func (e *Engagement) InsertFinding(severity int, timeStamp time.Time, title string, body string, dictionaryKey int, assetKey int) (int, error) {
-	// policy := bluemonday.UGCPolicy()
-	// policy.AllowStyles()
-	// policy.AllowElements("img")
-	// policy.AllowAttrs("src").OnElements("img")
-	//
-	// body = policy.Sanitize(body)
 
 	return e.db.ExecIndex(`INSERT INTO findings(
 severity,
@@ -51,9 +45,6 @@ assetKey
 }
 
 func (e *Engagement) UpdateFinding(key int, severity int, timeStamp time.Time, title string, body string, dictionaryKey int, assetKey int) error {
-	// policy := bluemonday.UGCPolicy()
-	// policy.AllowStyles()
-	// body = policy.Sanitize(body)
 	return e.db.Exec(`UPDATE findings SET severity = ?, timeStamp = ?, title = ?,  body= ?, dictionaryKey = ?, assetKey = ? WHERE "key" = ?`, 
 		severity, timeStamp.Unix(), 
 		html.EscapeString(html.UnescapeString(title)), body, dictionaryKey, assetKey, key)

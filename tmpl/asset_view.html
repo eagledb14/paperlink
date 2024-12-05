@@ -26,5 +26,21 @@
 
 <h3>Findings on this Asset</h3>
 {{range .Findings}}
-<p><a href="/finding/view/{{$.EngagementName}}/{{.Key}}">{{.Title}}</a></p>
+<p role="group">
+	<a role="button" class="outline" href="/finding/view/{{$.EngagementName}}/{{.Key}}">{{.Title}}</a>
+	{{if eq .Severity 0}}
+	<button class="no-click b-none bg-info">Severity: Info</button>
+	{{else if eq .Severity 1}}
+	<button class="no-click b-none bg-low">Severity: Low</button>
+	{{else if eq .Severity 2}}
+	<button class="no-click b-none bg-medium">Severity: Medium</button>
+	{{else if eq .Severity 3}}
+	<button class="no-click b-none bg-high">Severity: High</button>
+	{{else if eq .Severity 4}}
+	<button class="no-click b-none bg-critical">Severity: Critical</button>
+	{{end}}
+	<div></div>
+	<div></div>
+	<div></div>
+</p>
 {{end}}

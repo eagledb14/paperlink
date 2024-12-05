@@ -1,0 +1,27 @@
+<table>
+	<thead>
+		<tr>
+			<th>Word</th>
+			<th>Definition</th>
+			<th><button hx-get="/dictionary/new" hx-target="body" hx-prompt="Enter Name">+</button><th>
+		</tr>
+	</thead>
+	<tbody>
+		{{range .Words}}
+		<tr hx-target="this">
+			<td>{{.Word}}</td>
+			<td>
+				<details>
+					<summary role="button" class="outline">Click to View</summary>
+					<article>
+					{{.Definition}}
+					</article>
+				</details>
+			</td>
+			<td>
+				<button hx-delete="/dictionary/{{.Key}}" class="bg-red">-</button>
+			</td>
+		</tr>
+		{{end}}
+	</tbody>
+</table>

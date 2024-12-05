@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/eagledb14/paperlink/dictionary"
 	"github.com/eagledb14/paperlink/engagement"
 	"github.com/eagledb14/paperlink/types"
 	"github.com/gofiber/fiber/v2"
@@ -79,11 +80,13 @@ func Finding(state *types.State, app *fiber.App) {
 			Assets []engagement.Asset
 			EngagementName string
 			Finding engagement.Finding
+			Words []dictionary.Word
 		} {
 			Title: f.Title,
 			Assets: e.GetAssets(),
 			EngagementName: name,
 			Finding: f,
+			Words: state.Dictionary.GetWords(),
 		}
 		
 		body := BuildText("finding_edit.html", findingData)
@@ -147,17 +150,17 @@ func Finding(state *types.State, app *fiber.App) {
 			return c.SendString(err.Error())
 		}
 		f := e.GetFinding(keyInt)
-		_ = f
-
 
 		findingData := struct {
 			EngagementName string
 			Finding engagement.Finding
 			Asset engagement.Asset
+			Word dictionary.Word
 		} {
 			EngagementName: name,
 			Finding: f,
 			Asset: e.GetAsset(f.AssetKey),
+			Word: state.Dictionary.GetWord(f.DictionaryKey),
 		}
 
 		body := BuildText("finding_view.html", findingData)

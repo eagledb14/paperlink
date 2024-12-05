@@ -37,10 +37,17 @@
 		<input type="text" name="newAsset" id="newAsset">
 	</div>
 	<div>
-		<label for="dictionary">Tag??</label>
+		<label for="dictionary">Tag Definition</label>
 		<select name="dictionary" id="dictionary">
-			<option selected disabled value="">Select the Thing</option>
-			<!--Need to add the dictionary tag stuff here-->
+			{{if eq .Finding.DictionaryKey 0}}
+			<option selected disabled value="">Select a Definition Tag</option>
+			{{else}}
+			<option disabled value="">Select a Definition Tag</option>
+			{{end}}
+
+			{{range .Words}}
+			<option {{if eq .Key $.Finding.DictionaryKey}}selected{{end}} value="{{.Key}}">{{.Word}}</option>
+			{{end}}
 		</select>
 	</div>
 	<div>
@@ -57,18 +64,6 @@
 function getMce() {
 	return tinymce.get('editor').getContent();
 }
-//document.getElementById('findingForm').addEventListener('submit', function(event) {
-//	event.preventDefault();
-//
-//	const mceData = tinymce.get('editor').getContent();
-//	const form = event.target
-//	const formData = new FormData(form);
-//	formData.append('body', mceData);
-//
-//	htmx.ajax('POST', form.action, {
-//		values: Object.fromEntries(formData)
-//	});
-//});
 
 async function init() {
 
@@ -115,18 +110,6 @@ async function init() {
 	  toolbar_mode: 'sliding',
 	  contextmenu: 'link image table',
 	  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
-	  setup: function (editor) {
-		//     editor.on('blur', function () {
-		//const content = editor.getContent();
-		//
-		//var xhr = new XMLHttpRequest();
-		//xhr.open("PUT", "/finding/body/{{$.EngagementName}}/{{.Finding.Key}}", true);
-		//xhr.setRequestHeader('Content-Type', 'application/json');
-		//xhr.send(JSON.stringify({
-		//    content: content,
-		//}));
-		//     });
-	  },
 	  init_instance_callback: function (editor) {
 	    editor.setContent(`{{.Finding.Body}}`);
 	  },

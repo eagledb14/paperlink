@@ -2,10 +2,11 @@
 
 <nav class="bg-primary p-16 f-white">
 	<ul>
-		<li><a href="/section/view/{{.Name}}">Narrative</a></li>
-		<li><a href="/finding/list/{{.Name}}">Findings</a></li>
-		<li><a href="/asset/list/{{.Name}}">Assets</a></li>
-		<li><a href="/code/list/{{.Name}}">Short Codes</a></li>
+		<li><a role="button" href="/section/view/{{.Name}}">Narrative</a></li>
+		<li><a role="button" href="/finding/list/{{.Name}}">Findings</a></li>
+		<li><a role="button" href="/asset/list/{{.Name}}">Assets</a></li>
+		<li><a role="button" href="/code/list/{{.Name}}">Short Codes</a></li>
+		<li>|</li>
 		<li><button class="click" hx-post="{{.New}}" hx-target="body" hx-prompt="Enter Name">{{.Prompt}}</button></li>
 		<li>
 			<details class="dropdown">

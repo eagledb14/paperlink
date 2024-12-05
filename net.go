@@ -1,7 +1,7 @@
-package net
+package main
 
 import (
-
+	"github.com/eagledb14/paperlink/net"
 	"github.com/eagledb14/paperlink/types"
 	"github.com/gofiber/fiber/v2"
 )
@@ -9,23 +9,22 @@ import (
 
 func Run() {
 	state := types.NewState()
-	_ = state
 
 	app := fiber.New()
-	_ = app
+
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "text/html")
-		// return c.SendString(BuildPage(""))
 		return c.Redirect("/engagement")
 	})
 
-	Engagement(state, app)
-	Section(state, app)
-	Finding(state, app)
-	Asset(state, app)
-	Code(state, app)
-	Template(state, app)
+	net.Engagement(state, app)
+	net.Section(state, app)
+	net.Finding(state, app)
+	net.Asset(state, app)
+	net.Code(state, app)
+	net.Dictionary(state, app)
+	net.Template(state, app)
 
 	app.Static("/style.css", "./tmpl/styles.css")
 

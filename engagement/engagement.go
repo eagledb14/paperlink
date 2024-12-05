@@ -79,7 +79,7 @@ func newDb(folderPath string, name string, contact string, email string) Engagem
 
 	db, err := Open(folderPath+name+".db?_busy_timeout=10000")
 	if err != nil {
-		panic("Missing Resources")
+		panic("Unable to Create Engagement")
 	}
 
 	newEngagement := Engagement{
@@ -119,7 +119,9 @@ func newDb(folderPath string, name string, contact string, email string) Engagem
 
 	// create short codes
 	err = createCodeTable(db)
-	// TODO: also need to insert the default codes like contact and name of the place
+	newEngagement.InsertCode("client name", name)
+	newEngagement.InsertCode("client contact", contact)
+	newEngagement.InsertCode("client email", email)
 	if err != nil {
 		panic(fmt.Errorf("error making code table: %w", err))
 	}

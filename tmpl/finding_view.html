@@ -28,15 +28,23 @@
 		<h3>Tagged Asset</h3>
 		{{if eq .Asset.Key 0}}
 		{{else}}
-			<a href="/asset/view/{{$.EngagementName}}/{{.Asset.Key}}">{{.Asset.Name}}</a>
+			<a role="button" class="outline" href="/asset/view/{{$.EngagementName}}/{{.Asset.Key}}">{{.Asset.Name}}</a>
 		{{end}}
 	</div>
 
-	<h3>Tagged Description</h3>
-	<!--name-->
-	<!--body-->
-	<!--put these under an article, so it doesn't take up to much space, or just include it in a link-->
-
+	<div>
+		<h3>Tagged Description</h3>
+		{{if ne .Word.Key 0}}
+		<details>
+			<summary role="button" class="outline">
+				{{.Word.Word}}
+			</summary>
+			<article>
+				{{.Word.Definition}}
+			</article>
+		</details>
+		{{end}}
+	</div>
 </div>
 
 <br>
