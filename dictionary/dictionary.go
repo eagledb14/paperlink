@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"html"
 
-	"github.com/eagledb14/paperlink/engagement"
 	_ "modernc.org/sqlite"
+	db "github.com/eagledb14/paperlink/db"
 )
 
 type Dictionary struct {
-	db *engagement.DbWrapper
+	db *db.DbWrapper
 }
 
 type Word struct {
@@ -19,7 +19,7 @@ type Word struct {
 }
 
 func LoadDictionary() Dictionary {
-	db, err := engagement.Open("./dictionary.db?_busy_timeout=10000")
+	db, err := db.Open("./dictionary.db?_busy_timeout=10000")
 	if err != nil {
 		panic("Unable to Create Dictionary")
 	}
@@ -31,7 +31,7 @@ func LoadDictionary() Dictionary {
 	}
 }
 
-func createDictionaryTable(db *engagement.DbWrapper) error {
+func createDictionaryTable(db *db.DbWrapper) error {
 	return db.Exec(`CREATE TABLE IF NOT EXISTS dictionary(
 key INTEGER PRIMARY KEY,
 word TEXT,

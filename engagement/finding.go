@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"html"
+	db "github.com/eagledb14/paperlink/db"
 )
 
 type Finding struct {
@@ -20,7 +21,7 @@ type Finding struct {
 	AssetKey int
 }
 
-func createFindingTable(db *DbWrapper) error {
+func createFindingTable(db *db.DbWrapper) error {
 	return db.Exec(`CREATE TABLE IF NOT EXISTS findings(
 key INTEGER PRIMARY KEY,
 severity INTEGER,

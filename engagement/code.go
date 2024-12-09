@@ -1,6 +1,9 @@
 package engagement
 
-import "html"
+import (
+	"html"
+	db "github.com/eagledb14/paperlink/db"
+)
 
 
 
@@ -10,7 +13,7 @@ type Code struct {
 	Paste string
 }
 
-func createCodeTable(db *DbWrapper) error {
+func createCodeTable(db *db.DbWrapper) error {
 	return db.Exec(`CREATE TABlE IF NOT EXISTS codes(
 key INTEGER PRIMARY KEY,
 code TEXT,

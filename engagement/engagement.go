@@ -8,10 +8,11 @@ import (
 	"time"
 
 	_ "modernc.org/sqlite"
+	db "github.com/eagledb14/paperlink/db"
 )
 
 type Engagement struct {
-	db *DbWrapper
+	db *db.DbWrapper
 	folderPath string
 
 	Name    string
@@ -40,7 +41,7 @@ func NewEngagementFromTemplate(templateName string, name string, contact string,
 	}
 
 	// copy template database
-	err := copy(copyPath, destPath)
+	err := db.Copy(copyPath, destPath)
 	if err != nil {
 		fmt.Println(fmt.Errorf("CreateEngagementFromTemplate Copy: %w", err))
 	}
@@ -77,7 +78,7 @@ func newDb(folderPath string, name string, contact string, email string) Engagem
 
 	name = strings.TrimSpace(name)
 
-	db, err := Open(folderPath+name+".db?_busy_timeout=10000")
+	db, err := db.Open(folderPath+name+".db?_busy_timeout=10000")
 	if err != nil {
 		panic("Unable to Create Engagement")
 	}
@@ -172,7 +173,7 @@ func LoadTemplates() []Engagement {
 func loadEngagement(name string, folderPath string) (Engagement, error) {
 	newEngagement := Engagement{}
 
-	db, err := Open(folderPath+name+"?_busy_timeout=10000")
+	db, err := db.Open(folderPath+name+"?_busy_timeout=10000")
 	if err != nil {
 		panic("Missing Resources")
 	}
@@ -230,24 +231,24 @@ func (e *Engagement) UpdateEngagement(name string, contact string, email string)
 	copyPath := e.folderPath + e.Name + ".db"
 	destPath :=  e.folderPath + name + ".db"
 
-	e.db.mutex.Lock()
+	e.db.Mutex.Lock()
 
 	e.Close()
 	err := os.Rename(copyPath, destPath)
 	if err != nil {
-		e.db.mutex.Unlock()
-		e.db, _ = Open(copyPath)
+		e.db.Mutex.Unlock()
+		e.db, _ = db.Open(copyPath)
 		return err
 	}
 
-	newDb, err := Open(destPath)
+	newDb, err := db.Open(destPath)
 	if err != nil {
-		e.db.mutex.Unlock()
+		e.db.Mutex.Unlock()
 		return err
 	}
-	e.db.mutex.Unlock()
+	e.db.Mutex.Unlock()
 
-	e.db.db = newDb.db
+	e.db.Db = newDb.Db
 	err = e.db.Exec(`UPDATE engagements SET name = ?, contact = ?, email = ? WHERE name = ?`, name, contact, email, e.Name)
 
 	e.Name = name

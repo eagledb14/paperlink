@@ -5,6 +5,7 @@ import (
 	"html"
 	"sort"
 	"strings"
+	db "github.com/eagledb14/paperlink/db"
 
 )
 
@@ -16,7 +17,7 @@ type Section struct {
 	Body string
 }
 
-func createSectionTable(db *DbWrapper) error {
+func createSectionTable(db *db.DbWrapper) error {
 	return db.Exec(`CREATE TABLE IF NOT EXISTS sections(
 key INTEGER PRIMARY KEY,
 "index" INTEGER,

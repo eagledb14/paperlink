@@ -3,6 +3,7 @@ package engagement
 import (
 	"fmt"
 	"html"
+	db "github.com/eagledb14/paperlink/db"
 )
 
 type Asset struct {
@@ -12,7 +13,7 @@ type Asset struct {
 	AssetType string
 }
 
-func createAssetTable(db *DbWrapper) error {
+func createAssetTable(db *db.DbWrapper) error {
 	return db.Exec(`CREATE TABLE IF NOT EXISTS assets(
 key INTEGER PRIMARY KEY,
 parent TEXT,

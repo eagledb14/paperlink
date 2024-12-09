@@ -13,8 +13,8 @@ import (
 
 
 type DbWrapper struct {
-	db *sql.DB
-	mutex sync.RWMutex
+	Db *sql.DB
+	Mutex sync.RWMutex
 }
 
 func Open(path string) (*DbWrapper, error) {
@@ -24,22 +24,22 @@ func Open(path string) (*DbWrapper, error) {
 	}
 
 	return &DbWrapper{
-		db: db,
+		Db: db,
 	}, nil
 }
 
 func (d *DbWrapper) Exec(query string, args ...any) error {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	_, err := d.db.Exec(query, args...)
+	d.Mutex.Lock()
+	defer d.Mutex.Unlock()
+	_, err := d.Db.Exec(query, args...)
 	return err
 }
 
 func (d *DbWrapper) ExecIndex(query string, args ...any) (int, error) {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
+	d.Mutex.Lock()
+	defer d.Mutex.Unlock()
 
-	result, err := d.db.Exec(query, args...)
+	result, err := d.Db.Exec(query, args...)
 	if err != nil {
 		return 0, err
 	}
@@ -54,24 +54,24 @@ func (d *DbWrapper) ExecIndex(query string, args ...any) (int, error) {
 }
 
 func (d *DbWrapper) Query(query string, args ...any) (*sql.Rows, error) {
-	d.mutex.RLock()
-	defer d.mutex.RUnlock()
-	return d.db.Query(query, args...)
+	d.Mutex.RLock()
+	defer d.Mutex.RUnlock()
+	return d.Db.Query(query, args...)
 }
 
 func (d *DbWrapper) QueryRow(query string, args ...any) *sql.Row {
-	d.mutex.RLock()
-	defer d.mutex.RUnlock()
-	return d.db.QueryRow(query, args...)
+	d.Mutex.RLock()
+	defer d.Mutex.RUnlock()
+	return d.Db.QueryRow(query, args...)
 }
 
 func (d *DbWrapper) Close() {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	d.db.Close()
+	d.Mutex.Lock()
+	defer d.Mutex.Unlock()
+	d.Db.Close()
 }
 
-func copy(src, dst string) error {
+func Copy(src, dst string) error {
 	BUFFERSIZE := 200
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
