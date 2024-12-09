@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+        <title>Paper Link</title>
+        <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="/style.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+
+	<script src="/tinymce.min.js" referrerpolicy="origin"></script>
+</head>
+<body hx-boost="true">
+	<br>
+	<main class="container">
+		<form hx-post="/login" hx-target="body" hx-push-url="/engagement">
+			<div>
+				<label for="user">Username</label>
+				<input type="text" name="user" id="user" required>
+			</div>
+			<div>
+				<label for="password">Password</label>
+				<input type="password" name="password" id="password" required>
+			</div>
+			<button type="submit">></button>
+		</form>
+	</main>
+	<br>
+</body>
+</html>

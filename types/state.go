@@ -4,6 +4,7 @@ import (
 	"errors"
 	"sort"
 
+	"github.com/eagledb14/paperlink/auth"
 	"github.com/eagledb14/paperlink/dictionary"
 	"github.com/eagledb14/paperlink/engagement"
 )
@@ -15,6 +16,7 @@ type State struct {
 	EngagementMap map[string]int
 	TemplateMap map[string]int
 	Dictionary dictionary.Dictionary
+	Auth *auth.Auth
 }
 
 func NewState() *State {
@@ -32,6 +34,7 @@ func NewState() *State {
 	updateMap(newState.Templates, newState.TemplateMap)
 
 	newState.Dictionary = dictionary.LoadDictionary()
+	newState.Auth = auth.NewAuth()
 
 	return &newState
 }

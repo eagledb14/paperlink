@@ -113,7 +113,6 @@ func Finding(state *types.State, app *fiber.App) {
 			return c.SendString(err.Error())
 		}
 		f := e.GetFinding(keyInt)
-		_ = f
 
 		assetKey := 0
 		newAsset := c.FormValue("newAsset")
@@ -122,11 +121,12 @@ func Finding(state *types.State, app *fiber.App) {
 		} else {
 			assetKey, err = strconv.Atoi(c.FormValue("asset"))
 		}
+		newName := c.FormValue("name")
 
 		dictionaryKey, err := strconv.Atoi(c.FormValue("dictionary"))
 		severity, err := strconv.Atoi(c.FormValue("severity"))
 
-		e.UpdateFinding(keyInt, severity, f.TimeStamp, f.Title, c.FormValue("body"), dictionaryKey, assetKey)
+		e.UpdateFinding(keyInt, severity, f.TimeStamp, newName, c.FormValue("body"), dictionaryKey, assetKey)
 		
 		return c.Redirect("/finding/view/" + name + "/" + key)
 	})

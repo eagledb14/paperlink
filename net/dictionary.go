@@ -9,7 +9,7 @@ import (
 )
 
 
-func Dictionary(state *types.State, app *fiber.App ) {
+func Dictionary(state *types.State, app *fiber.App) {
 	app.Get("/dictionary", func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "text/html")
 

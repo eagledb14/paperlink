@@ -104,7 +104,9 @@ func Asset(state *types.State, app *fiber.App) {
 			return c.SendString(err.Error())
 		}
 
-		e.UpdateAsset(keyInt, c.FormValue("parent"), c.FormValue("name"), c.FormValue("type"))
+		newName := c.FormValue("name")
+
+		e.UpdateAsset(keyInt, c.FormValue("parent"), newName, c.FormValue("type"))
 		return c.Redirect("/asset/view/" + name + "/" + key)
 	})
 

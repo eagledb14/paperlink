@@ -1,0 +1,13 @@
+<h1>{{.Username}}</h1>
+
+<form>
+	Reset Password
+</form>
+
+
+{{if eq {{.Admin}} true}}
+
+<form>
+	Add new User
+</form>
+{{end}}

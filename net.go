@@ -8,6 +8,7 @@ import (
 
 
 func Run() {
+	port := ":8080"
 	state := types.NewState()
 
 	app := fiber.New()
@@ -17,6 +18,7 @@ func Run() {
 		return c.Redirect("/engagement")
 	})
 
+	net.Auth(state, app)
 	net.Engagement(state, app)
 	net.Section(state, app)
 	net.Finding(state, app)
@@ -24,6 +26,7 @@ func Run() {
 	net.Code(state, app)
 	net.Dictionary(state, app)
 	net.Template(state, app)
+	net.Profile(state, app)
 
 	app.Static("/style.css", "./tmpl/styles.css")
 
@@ -34,7 +37,7 @@ func Run() {
 	app.Static("/icons", "./node_modules/tinymce/icons")
 	app.Static("/skins", "./node_modules/tinymce/skins")
 
-	app.Listen(":8080")
+	app.Listen(port)
 }
 
 
