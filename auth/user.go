@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"crypto/sha1"
 	"encoding/base64"
+	"html"
 
 	"golang.org/x/crypto/argon2"
 
@@ -101,19 +102,59 @@ username,
 passHash,
 salt,
 admin
-) VALUES (?, ?, ?, ?)`, user.Username, user.PassHash, user.Salt, user.Admin)
+) VALUES (?, ?, ?, ?)`, html.EscapeString(user.Username), user.PassHash, user.Salt, user.Admin)
+}
+
+func (a *Auth) UpdatePassword(user User, newPassword string) (User, error) {
+	err := a.DeleteUser(user.Username)
+	if err != nil {
+		return User{}, err
+	}
+
+	newUser, err := a.NewUser(user.Username, newPassword, user.Admin)
+	if err != nil {
+		return User{}, err
+	}
+
+	err = a.InsertUser(newUser)
+	if err != nil {
+		return User{}, err
+	}
+	return newUser, nil
+}
+
+func (a *Auth) UpdateAdmin(username string, admin bool) error {
+	return a.db.Exec(`UPDATE users SET admin = ? WHERE username = ?`, admin, username)
 }
 
 func (a *Auth) GetUser(username string) (User, error) {
-	hasher := sha1.New()
-	hasher.Write([]byte(username))
-	userHash := base64.RawStdEncoding.EncodeToString(hasher.Sum(nil))
-
-	row := a.db.QueryRow(`SELECT username, passHash, salt, admin FROM users WHERE username = ?`, userHash)
+	row := a.db.QueryRow(`SELECT username, passHash, salt, admin FROM users WHERE username = ?`, username)
 	newUser := User{}
 	if err := row.Scan(&newUser.Username, &newUser.PassHash, &newUser.Salt, &newUser.Admin); err != nil {
 		return newUser, err
 	}
 
 	return newUser, nil
+}
+
+func (a *Auth) GetUsers() []User {
+	rows, err := a.db.Query(`SELECT username, admin FROM users`)
+	if err != nil {
+		return []User{}
+	}
+	defer rows.Close()
+	users := []User{}
+	for rows.Next() {
+		newUser := User{}
+		if err := rows.Scan(&newUser.Username, &newUser.Admin); err != nil {
+			continue
+		}
+		users = append(users, newUser)
+	}
+
+	return users
+}
+
+func (a *Auth) DeleteUser(name string) error {
+	return a.db.Exec(`DELETE FROM users WHERE username = ?`, name)
 }

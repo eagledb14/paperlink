@@ -11,19 +11,21 @@
 </head>
 <body hx-boost="true">
 	<br>
-	<main class="container">
-		<form hx-post="/login" hx-target="body" hx-push-url="/engagement">
-			<div>
-				<label for="user">Username</label>
-				<input type="text" name="user" id="user" required>
-			</div>
-			<div>
-				<label for="password">Password</label>
-				<input type="password" name="password" id="password" required>
-			</div>
-			<button type="submit">></button>
-		</form>
-	</main>
+	<article>
+		<main class="container">
+			<form hx-post="/login" hx-target="body" hx-push-url="/engagement">
+				<div>
+					<label for="username">Username</label>
+					<input type="text" name="username" id="username" required>
+				</div>
+				<div>
+					<label for="password">Password</label>
+					<input type="password" name="password" id="password" required>
+				</div>
+				<button type="submit">></button>
+			</form>
+		</main>
+	</article>
 	<br>
 </body>
 </html>

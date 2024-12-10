@@ -4,6 +4,7 @@ import (
 	"github.com/eagledb14/paperlink/net"
 	"github.com/eagledb14/paperlink/types"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 
@@ -12,6 +13,11 @@ func Run() {
 	state := types.NewState()
 
 	app := fiber.New()
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost" + port,
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "text/html")

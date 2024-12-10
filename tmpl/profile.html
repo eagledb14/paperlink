@@ -1,13 +1,71 @@
-<h1>{{.Username}}</h1>
+<div role="group">
+	<button hx-post="/logout" hx-target="body">Logout</button>
+	<button class="bg-red" hx-delete="/account" target="body" hx-prompt="Confirm Password">Delete Account</button>
+</div>
 
-<form>
-	Reset Password
-</form>
+<article>
+	<form hx-post="/profile/reset">
+		<h3>Reset Password</h3>
+		<div>
+			<label for="current">Enter Current Password</label>
+			<input type="password" name="current" id="current" required>
+		</div>
+		<div>
+			<label for="new1">Enter New Password</label>
+			<input type="password" name="new1" id="new1" required>
+		</div>
+		<div>
+			<label for="new2">Enter New Password again</label>
+			<input type="password" name="new2" id="new2" required>
+		</div>
+		<button type="submit">></button>
+	</form>
+</article>
 
+{{if eq .User.Admin true}}
+<hr>
+<h2>Admin Panel</h2>
 
-{{if eq {{.Admin}} true}}
+<article>
+	<form hx-post="create-user" hx-target="#message">
+		<h3>Create new User</h3>
+		<div>
+			<label for="username">Enter Username</label>
+			<input type="text" name="username" id="username">
+		</div>
+		<fieldset>
+			<label>
+				<input type="checkbox" name="admin"/>
+				Admin Account
+			</label>
+		</fieldset>
+		<button type="submit">></button>
+	</form>
+	<div id="message"></div>
+</article>
 
-<form>
-	Add new User
-</form>
+<details open>
+	<summary role="button" class="outline">
+		<h3>Users List</h3>
+	</summary>
+	<table>
+		<tbody>
+		{{range .Users}}
+			<tr hx-target="this">
+				<td>{{.Username}}</td>
+				<td>{{if eq .Admin true}}<button class="no-click bg-low">Admin</button>{{else}}<button class="no-click bg-info">Not Admin</button>{{end}}
+				<td role="group">
+					<div></div>
+					<div></div>
+					<div></div>
+					<button hx-put="/toggle-admin" hx-target="body" hx-vals='{"username": "{{.Username}}"}'>Toggle Admin</button>
+					<button class="bg-red" hx-delete="/account-admin" hx-vals='{"username": "{{.Username}}"}' hx-confirm="Are you Sure you want to delete User: {{.Username}}">-</button>
+				</td>
+			</tr>
+		{{end}}
+		</tbody>
+	</table>
+
+</details>
+
 {{end}}
