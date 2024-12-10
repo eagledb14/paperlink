@@ -1,8 +1,6 @@
 package net
 
 import (
-	"fmt"
-
 	"github.com/eagledb14/paperlink/auth"
 	"github.com/eagledb14/paperlink/types"
 
