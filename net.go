@@ -1,8 +1,10 @@
 package main
 
 import (
-	"os"
 	"encoding/csv"
+	"os"
+	"time"
+
 	"github.com/eagledb14/paperlink/net"
 	"github.com/eagledb14/paperlink/types"
 	"github.com/gofiber/fiber/v2"
@@ -45,6 +47,12 @@ func Run() {
 	net.Template(state, app)
 	net.Profile(state, app)
 
+	go func()  {
+		for {
+			backup()
+		}
+	}()
+
 	app.Listen(port)
 }
 
@@ -63,4 +71,11 @@ func EnsureCSVHasHeader() {
 		header := []string{"Username","Method", "Endpoint", "Timestamp", "HTTP Body"}
 		writer.Write(header)
 	}
+}
+
+func backup() {
+	os.CopyFS("./backup/engagements-" + time.Now().Format(time.RFC3339), os.DirFS("./engagements/"))
+	os.CopyFS("./backup/templates-" + time.Now().Format(time.RFC3339), os.DirFS("./templates/"))
+	
+	time.Sleep(time.Duration(2 * time.Hour))
 }
