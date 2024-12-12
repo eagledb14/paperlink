@@ -2,10 +2,10 @@ all: run
 
 build:
 	GOOS=linux GOARCH=amd64 go build -ldflags "-s -w"  -o paperlink .
-	zip -r paperlink.zip ./resources ./paperlink
+	zip -r paperlink.zip ./tmpl ./paperlink ./makefile
 	rm paperlink
 
-run: 
+run: npm
 	@go run .
 
 npm:

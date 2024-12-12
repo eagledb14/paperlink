@@ -8,7 +8,6 @@ import (
 	"github.com/eagledb14/paperlink/auth"
 	"github.com/eagledb14/paperlink/dictionary"
 	"github.com/eagledb14/paperlink/engagement"
-	"github.com/gofiber/websocket/v2"
 )
 
 
@@ -41,11 +40,6 @@ func NewState() *State {
 
 	return &newState
 }
-
-func (s *State) AddClient(clientName string, ws *websocket.Conn) {
-}
-
-
 
 func (s *State) GetEngagement(name string) (*engagement.Engagement, error) {
 	index, exists := s.EngagementMap[name]

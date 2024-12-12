@@ -186,7 +186,7 @@ func Section(state *types.State, app *fiber.App) {
 				if client != c {
 					err := client.WriteMessage(msgType, msg)
 					if err != nil {
-						fmt.Println("Error broadcasting message:", err)
+						fmt.Println("Error broadcasting message:", err, clientName)
 					}
 				}
 			}
@@ -196,10 +196,9 @@ func Section(state *types.State, app *fiber.App) {
 			ws, _ := state.Clients.Load(clientName)
 			conn := ws.([]*websocket.Conn)
 			for i, client := range conn {
-				if client == c {
+				if client == c || client == nil {
 					conn := append(conn[:i], conn[i + 1:]...)
 					state.Clients.Store(clientName, conn)
-					break
 				}
 			}
 		}()

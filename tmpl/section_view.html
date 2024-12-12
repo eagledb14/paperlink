@@ -50,9 +50,9 @@ async function init() {
 		  selector: '#editor{{$val.Key}}',
 		  license_key: 'gpl',
 		  promotion: false,
-		  plugins: 'preview importcss searchreplace autolink directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
+		  plugins: 'preview importcss searchreplace autolink directionality code visualblocks visualchars fullscreen image link table charmap nonbreaking insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
 		  menubar: 'edit view insert format tools table help',
-		  toolbar: "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | pagebreak anchor codesample | ltr rtl",
+		  toolbar: "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image table | lineheight outdent indent| forecolor backcolor removeformat | fullscreen",
 		  image_advtab: true,
 		  importcss_append: true,
 		  file_picker_callback: (callback, value, meta) => {
@@ -83,10 +83,8 @@ async function init() {
 		    input.click();
 		  },  
 		  height: 600,
-		  quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
 		  noneditable_class: 'mceNonEditable',
-		  toolbar_mode: 'sliding',
-		  contextmenu: 'link image table',
+		  toolbar_mode: 'wrap',
 		  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
 		  setup: function (editor) {
 		      editor.on('blur', function () {
@@ -106,8 +104,13 @@ async function init() {
 			}
 
 			ws[{{$index}}].onmessage = function(event) {
+				const bookmark = editor.selection.getBookmark(2, true);
 				const data = event.data;
-				tinymce.get('editor{{.Key }}').setContent(data);
+				console.log(bookmark)
+				editor.setContent(data);
+				setTimeout(() => {
+					editor.selection.moveToBookmark(bookmark)
+				}, 0);
 			};
 
 			editor.on('keyup', function() {

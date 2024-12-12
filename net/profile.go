@@ -58,16 +58,6 @@ func Profile(state *types.State, app *fiber.App) {
 		newUser, err := state.Auth.UpdatePassword(user, new1)
 		_  = newUser
 
-		// users := state.Auth.GetUsers()
-		// data := struct {
-		// 	User auth.User
-		// 	Users []auth.User
-		// } {
-		// 	User: user,
-		// 	Users: users,
-		// }
-
-		// return c.SendString(BuildPage("/ Profile /", newUser.Username, BuildText("profile.html", data)))
 		return c.SendString(BuildPage("/", "Engagements", BuildHtml("engagement_list.html", state.Engagements)))
 	})
 
