@@ -30,3 +30,4 @@ templates/
 node_modules/
 package-lock.json
 *.db
+*.csv

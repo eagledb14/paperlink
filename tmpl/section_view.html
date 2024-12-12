@@ -9,7 +9,7 @@
 			<div></div>
 			<div></div>
 		</div>
-		<h3>{{.Title}}<h3>
+		<h3>{{.Title}}</h3>
 	</summary>
 	<article>
 		<div role="group">
@@ -25,10 +25,29 @@
 
 <script>
 async function init() {
-	{{range .Sections}}
-		tinymce.remove('#editor{{.Key}}')
+	const ws = []
+
+	for (let i = 0; i < {{len .Sections}}; i++) {
+		ws.push(new WebSocket(`ws://localhost:8080/ws/{{$.EngagementName}}/` + i));
+
+
+		    // Handle WebSocket errors
+		ws[i].onerror = function(error) {
+			console.log('WebSocket Error: ' + error);
+		};
+
+		    // Handle WebSocket connection close
+		ws[i].onclose = function() {
+			console.log('WebSocket closed');
+		};
+
+	}
+
+	{{range $index, $val := .Sections}}
+
+		tinymce.remove('#editor{{$val.Key}}')
 		tinymce.init({
-		  selector: '#editor{{.Key}}',
+		  selector: '#editor{{$val.Key}}',
 		  license_key: 'gpl',
 		  promotion: false,
 		  plugins: 'preview importcss searchreplace autolink directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
@@ -74,12 +93,33 @@ async function init() {
 			const content = editor.getContent();
 
 			var xhr = new XMLHttpRequest();
-			xhr.open("PUT", "/section/body/{{$.EngagementName}}/{{.Key}}", true);
+			xhr.open("PUT", "/section/body/{{$.EngagementName}}/{{$val.Key}}", true);
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.send(JSON.stringify({
 			    content: content,
 			}));
 		      });
+
+			function sendContent() {
+				const content = editor.getContent();
+				ws[{{$index}}].send(content);
+			}
+
+			ws[{{$index}}].onmessage = function(event) {
+				const data = event.data;
+				tinymce.get('editor{{.Key }}').setContent(data);
+			};
+
+			editor.on('keyup', function() {
+				sendContent()
+			});
+			editor.on('Change', function() {
+				sendContent()
+			});
+			editor.on('Paste', function() {
+				sendContent()
+			});
+
 		  },
 		  init_instance_callback: function (editor) {
 		    editor.setContent(`{{.Body}}`);

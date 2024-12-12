@@ -3,11 +3,15 @@ package net
 import (
 	"bytes"
 	html "html/template"
+	"os"
+	"strconv"
+	"strings"
 	text "text/template"
 )
 
 func BuildHtml(fileName string, data interface{}) string {
-	tmpl, err := html.ParseFiles("./tmpl/" + fileName)
+	file, err := os.ReadFile("./tmpl/" + fileName)
+	tmpl, err := html.New("html_template").Funcs(getFuncMap()).Parse(string(file))
 	if err != nil {
 		return err.Error()
 	}
@@ -23,7 +27,8 @@ func BuildHtml(fileName string, data interface{}) string {
 }
 
 func BuildText(fileName string, data interface{}) string {
-	tmpl, err := text.ParseFiles("./tmpl/" + fileName)
+	file, err := os.ReadFile("./tmpl/" + fileName)
+	tmpl, err := text.New("html_template").Funcs(getFuncMap()).Parse(string(file))
 	if err != nil {
 		return err.Error()
 	}
@@ -50,4 +55,12 @@ func BuildPage(directory string, title string, body string) string {
 	}
 
 	return BuildText("build.html", data)
+}
+
+func getFuncMap() html.FuncMap {
+	return html.FuncMap {
+		"append": func(i int, j string) string {
+		    return strings.ReplaceAll(strconv.Itoa(i)+j, " ", "")
+		},
+	}
 }

@@ -1,6 +1,7 @@
 package net
 
 import (
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"github.com/eagledb14/paperlink/engagement"
 	"github.com/eagledb14/paperlink/types"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/websocket/v2"
 )
 
 func Section(state *types.State, app *fiber.App) {
@@ -155,6 +157,57 @@ func Section(state *types.State, app *fiber.App) {
 
 		return c.SendString(BuildPage("/ engagements / narrative / ", name, getSectionView(state, name)))
 	})
+
+	app.Get("/ws/:name/:key", websocket.New(func(c *websocket.Conn) {
+		name := c.Params("name")
+		name, _ = url.QueryUnescape(name)
+		key := c.Params("key")
+
+		clientName := name + key
+		ws, ok := state.Clients.Load(clientName)
+		if !ok {
+			state.Clients.Store(clientName, []*websocket.Conn{c})
+		} else {
+			conn := ws.([]*websocket.Conn)
+			conn = append(conn, c)
+			state.Clients.Store(clientName, conn)
+		}
+
+		// state.Clients[clientName] = append(state.Clients[clientName], c)
+
+		for {
+			msgType, msg, err := c.ReadMessage()
+			if err != nil {
+				break
+			}
+
+			ws, _ := state.Clients.Load(clientName)
+			conn := ws.([]*websocket.Conn)
+			// state.Clients.Range(func(key, value any) bool {
+			for _, client := range conn {
+				if client != c {
+					err := client.WriteMessage(msgType, msg)
+					if err != nil {
+						fmt.Println("Error broadcasting message:", err)
+					}
+				}
+			}
+		}
+
+		defer func() {
+			ws, _ := state.Clients.Load(clientName)
+			conn := ws.([]*websocket.Conn)
+			for i, client := range conn {
+			// state.Clients.Range(func(key, value any) bool {
+				if client == c {
+					// state.Clients.Delete(clientName)
+					conn := append(conn[:i], conn[i + 1:]...)
+					state.Clients.Store(clientName, conn)
+					break
+				}
+			}
+		}()
+	}))
 }
 
 func getSectionView(state *types.State, name string) string {

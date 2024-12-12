@@ -111,6 +111,9 @@ func (e* Engagement) GetFindingsWithAsset(key int) []Finding {
 	return findings
 }
 
+func (e* Engagement) DeleteFindingsWithAsset(key int) error {
+	return e.db.Exec(`DELETE FROM findings WHERE assetKey = ?`, key)
+}
 
 func (e *Engagement) DeleteFinding(key int) error {
 	return e.db.Exec(`DELETE FROM findings WHERE key = ?`, key)

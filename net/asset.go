@@ -142,6 +142,39 @@ func Asset(state *types.State, app *fiber.App) {
 
 		return c.SendString(BuildPage("/ engagements / assets / " + name + " /", a.Name, getAssetView(name, body)))
 	})
+	
+	app.Delete("asset/:name/:key", func(c *fiber.Ctx) error {
+		c.Set("Content-Type", "text/html")
+		name := c.Params("name")
+		name, err := url.QueryUnescape(name)
+		if err != nil {
+			return c.SendStatus(404)
+		}
+
+		key := c.Params("key")
+		keyInt, err := strconv.Atoi(key)
+		if err != nil {
+			return c.SendStatus(404)
+		}
+
+		e, err := state.GetEngagement(name)
+		if err != nil {
+			return c.SendString(err.Error())
+		}
+		e.DeleteAsset(keyInt)
+		e.DeleteFindingsWithAsset(keyInt)
+
+		data := struct {
+			EngagementName string
+			Assets []engagement.Asset
+		} {
+			EngagementName: name,
+			Assets: e.GetAssets(),
+		}
+		body := BuildText("asset_list.html", data)
+
+		return c.SendString(BuildPage("/ engagements / assets / ", name, getAssetView(name, body)))
+	})
 }
 
 func getAssetView(name string, body string) string {

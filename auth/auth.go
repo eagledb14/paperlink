@@ -9,8 +9,6 @@ import (
 type Auth struct {
 	db *db.DbWrapper
 	Cookies map[string]string
-	// TODO: users
-	// TODO: what
 }
 
 func NewAuth() *Auth {

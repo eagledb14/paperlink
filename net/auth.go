@@ -1,6 +1,8 @@
 package net
 
 import (
+	"encoding/csv"
+	"os"
 	"strings"
 	"time"
 
@@ -42,6 +44,33 @@ func Auth(state *types.State, app *fiber.App) {
 		return c.SendString(BuildPage("/", "Engagements", BuildHtml("engagement_list.html", state.Engagements)))
 	})
 
+	app.Post("/logout", func(c *fiber.Ctx) error {
+		c.Set("Content-Type", "text/html")
+		setCookie := c.Cookies("session")
+
+		c.ClearCookie()
+		delete(state.Auth.Cookies, setCookie)
+
+		return c.SendString(BuildHtml("login.html", ""))
+	})
+
+
+	app.Use(func(c *fiber.Ctx) error {
+		cookie := c.Cookies("session")
+
+		username, ok := state.Auth.Cookies[cookie]
+
+		if !ok || cookie == "" {
+			return c.Redirect("/login")
+		}
+
+		if c.Method() != "GET" {
+			go LogRequest(username, strings.Clone(c.Method()), strings.Clone(c.Path()), strings.Clone(string(c.Body())))
+		}
+
+		return c.Next()
+	})
+
 	app.Post("/create-user", func(c *fiber.Ctx) error {
 		cookie := c.Cookies("session")
 		adminUsername := state.Auth.Cookies[cookie]
@@ -61,29 +90,6 @@ func Auth(state *types.State, app *fiber.App) {
 		}
 
 		return c.SendString("Temporary Password: " + tempPassword)
-	})
-
-	app.Post("/logout", func(c *fiber.Ctx) error {
-		c.Set("Content-Type", "text/html")
-		setCookie := c.Cookies("session")
-
-		c.ClearCookie()
-		delete(state.Auth.Cookies, setCookie)
-
-		return c.SendString(BuildHtml("login.html", ""))
-	})
-
-
-	app.Use(func(c *fiber.Ctx) error {
-		cookie := c.Cookies("session")
-
-		_, ok := state.Auth.Cookies[cookie]
-
-		if !ok || cookie == "" {
-			return c.Redirect("/login")
-		}
-
-		return c.Next()
 	})
 
 	app.Delete("/account", func(c *fiber.Ctx) error {
@@ -149,4 +155,26 @@ func Auth(state *types.State, app *fiber.App) {
 		return c.SendString(BuildPage("/ Profile /", adminUser.Username, BuildText("profile.html", data)))
 	})
 
+}
+
+func LogRequest(username, method, endpoint, body string) {
+
+	file, err := os.OpenFile("access_logs.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	record := []string{
+		username,
+		method,
+		endpoint,
+		time.Now().Format(time.RFC3339),
+		body,
+	}
+
+	writer.Write(record)
 }

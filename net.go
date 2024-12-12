@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"encoding/csv"
 	"github.com/eagledb14/paperlink/net"
 	"github.com/eagledb14/paperlink/types"
 	"github.com/gofiber/fiber/v2"
@@ -9,6 +11,7 @@ import (
 
 
 func Run() {
+	EnsureCSVHasHeader()
 	port := ":8080"
 	state := types.NewState()
 
@@ -46,4 +49,19 @@ func Run() {
 	app.Listen(port)
 }
 
+func EnsureCSVHasHeader() {
+	// Check if the file exists
+	_, err := os.Stat("access_logs.csv")
+	if os.IsNotExist(err) {
+		// If file doesn't exist, create it and write the header
+		file, _ := os.Create("access_logs.csv")
+		defer file.Close()
 
+		// Create a CSV writer and write the header row
+		writer := csv.NewWriter(file)
+		defer writer.Flush()
+
+		header := []string{"Username","Method", "Endpoint", "Timestamp", "HTTP Body"}
+		writer.Write(header)
+	}
+}
