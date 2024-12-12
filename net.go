@@ -27,6 +27,14 @@ func Run() {
 		return c.Redirect("/engagement")
 	})
 
+	app.Static("/style.css", "./tmpl/styles.css")
+	app.Static("/tinymce.min.js", "./node_modules/tinymce/tinymce.min.js")
+	app.Static("/themes/silver/theme.min.js", "./node_modules/tinymce/themes/silver/theme.min.js")
+	app.Static("/plugins", "./node_modules/tinymce/plugins")
+	app.Static("/models", "./node_modules/tinymce/models")
+	app.Static("/icons", "./node_modules/tinymce/icons")
+	app.Static("/skins", "./node_modules/tinymce/skins")
+
 	net.Auth(state, app)
 	net.Engagement(state, app)
 	net.Section(state, app)
@@ -36,15 +44,6 @@ func Run() {
 	net.Dictionary(state, app)
 	net.Template(state, app)
 	net.Profile(state, app)
-
-	app.Static("/style.css", "./tmpl/styles.css")
-
-	app.Static("/tinymce.min.js", "./node_modules/tinymce/tinymce.min.js")
-	app.Static("/themes/silver/theme.min.js", "./node_modules/tinymce/themes/silver/theme.min.js")
-	app.Static("/plugins", "./node_modules/tinymce/plugins")
-	app.Static("/models", "./node_modules/tinymce/models")
-	app.Static("/icons", "./node_modules/tinymce/icons")
-	app.Static("/skins", "./node_modules/tinymce/skins")
 
 	app.Listen(port)
 }

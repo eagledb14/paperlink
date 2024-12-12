@@ -173,8 +173,6 @@ func Section(state *types.State, app *fiber.App) {
 			state.Clients.Store(clientName, conn)
 		}
 
-		// state.Clients[clientName] = append(state.Clients[clientName], c)
-
 		for {
 			msgType, msg, err := c.ReadMessage()
 			if err != nil {
@@ -183,7 +181,7 @@ func Section(state *types.State, app *fiber.App) {
 
 			ws, _ := state.Clients.Load(clientName)
 			conn := ws.([]*websocket.Conn)
-			// state.Clients.Range(func(key, value any) bool {
+
 			for _, client := range conn {
 				if client != c {
 					err := client.WriteMessage(msgType, msg)
@@ -198,9 +196,7 @@ func Section(state *types.State, app *fiber.App) {
 			ws, _ := state.Clients.Load(clientName)
 			conn := ws.([]*websocket.Conn)
 			for i, client := range conn {
-			// state.Clients.Range(func(key, value any) bool {
 				if client == c {
-					// state.Clients.Delete(clientName)
 					conn := append(conn[:i], conn[i + 1:]...)
 					state.Clients.Store(clientName, conn)
 					break

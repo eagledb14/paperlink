@@ -89,7 +89,7 @@ func Auth(state *types.State, app *fiber.App) {
 			return c.SendStatus(404)
 		}
 
-		return c.SendString("Temporary Password: " + tempPassword)
+		return c.SendString("Temporary Password: <textarea style=\"resize: none;\">" + tempPassword + "</textarea>")
 	})
 
 	app.Delete("/account", func(c *fiber.Ctx) error {

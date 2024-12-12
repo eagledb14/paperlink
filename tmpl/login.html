@@ -27,5 +27,20 @@
 		</main>
 	</article>
 	<br>
+	<div id="toast" style="background-color: red;"></div>
+	<script>
+		document.body.addEventListener('htmx:responseError', function(event) {
+			if (event.detail.xhr.status === 404) {
+				const errorDiv = document.getElementById('toast')
+				errorDiv.style.display = 'block'
+				errorDiv.textContent = 'Error from Server';
+				errorDiv.classList.add('toast');
+				setTimeout(() => {
+					errorDiv.classList.remove(...errorDiv.classList)
+					errorDiv.style.display = 'none'
+				}, 2000)
+			}
+		})
+	</script>
 </body>
 </html>
