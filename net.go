@@ -74,8 +74,10 @@ func EnsureCSVHasHeader() {
 }
 
 func backup() {
+	os.RemoveAll("./backup/")
+	
 	os.CopyFS("./backup/engagements-" + time.Now().Format(time.RFC3339), os.DirFS("./engagements/"))
 	os.CopyFS("./backup/templates-" + time.Now().Format(time.RFC3339), os.DirFS("./templates/"))
 	
-	time.Sleep(time.Duration(2 * time.Hour))
+	time.Sleep(time.Duration(12 * time.Hour))
 }
