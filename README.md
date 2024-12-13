@@ -35,6 +35,13 @@ This will make a zip file called paperlink.zip containing all files for the appl
 
 ```./paperlink```
 
-To start the application
+To start the application on port 8080
 
+## Flags
+
+To create an admin account run
+
+```./paperlink --admin {name of admin account}```
+
+This will create an admin account and print the temporary password to standard out. Remember to copy this password, as it can't be recovered.
 
