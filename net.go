@@ -50,6 +50,8 @@ func Run() {
 	go func()  {
 		for {
 			backup()
+			clear_cache(state)
+			time.Sleep(time.Duration(12 * time.Hour))
 		}
 	}()
 
@@ -77,7 +79,8 @@ func backup() {
 	os.RemoveAll("./backup/")
 	
 	os.CopyFS("./backup/engagements-" + time.Now().Format(time.RFC3339), os.DirFS("./engagements/"))
-	os.CopyFS("./backup/templates-" + time.Now().Format(time.RFC3339), os.DirFS("./templates/"))
-	
-	time.Sleep(time.Duration(12 * time.Hour))
+}
+
+func clear_cache(state *types.State) {
+	state.Auth.Cookies = map[string]string{}
 }

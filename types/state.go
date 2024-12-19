@@ -14,8 +14,8 @@ import (
 type State struct {
 	Engagements []engagement.Engagement
 	Templates []engagement.Engagement
-	EngagementMap map[string]int
-	TemplateMap map[string]int
+	lock sync.RWMutex
+
 	Dictionary dictionary.Dictionary
 	Auth *auth.Auth
 	Clients sync.Map
@@ -29,12 +29,6 @@ func NewState() *State {
 	newState.Templates = engagement.LoadTemplates()
 	sortEngagements(newState.Templates)
 
-	newState.EngagementMap = make(map[string]int)
-	newState.TemplateMap = make(map[string]int)
-
-	updateMap(newState.Engagements, newState.EngagementMap)
-	updateMap(newState.Templates, newState.TemplateMap)
-
 	newState.Dictionary = dictionary.LoadDictionary()
 	newState.Auth = auth.NewAuth()
 
@@ -42,61 +36,67 @@ func NewState() *State {
 }
 
 func (s *State) GetEngagement(name string) (*engagement.Engagement, error) {
-	index, exists := s.EngagementMap[name]
-	if !exists || index >= len(s.Engagements) {
-		return nil, errors.New("Missing Engagement")
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+	for _, e := range s.Engagements {
+		if e.Name == name {
+			return &e, nil
+		}
 	}
-
-	e := s.Engagements[index]
 	
-	return &e, nil
+	return nil, errors.New("Engagement Not Found")
 }
 
 func (s *State) GetTemplate(name string) (*engagement.Engagement, error) {
-	index, exists := s.TemplateMap[name]
-	if !exists || index >= len(s.Templates) {
-		return nil, errors.New("Missing Template")
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+	for _, e := range s.Templates {
+		if e.Name == name {
+			return &e, nil
+		}
 	}
-
-	e := s.Templates[index]
 	
-	return &e, nil
+	return nil, errors.New("Template Not Found")
 }
 
 func (s *State) AddEngagement(newEngagement engagement.Engagement) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
 	s.Engagements = append([]engagement.Engagement{newEngagement}, s.Engagements...)
-	updateMap(s.Engagements, s.EngagementMap)
 }
 
 func (s *State) AddTemplate(newTemplate engagement.Engagement) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
 	s.Templates = append([]engagement.Engagement{newTemplate}, s.Templates...)
-	updateMap(s.Templates, s.TemplateMap)
 }
 
 func (s *State) DeleteEnagement(name string) {
-	index := s.EngagementMap[name]
-	s.Engagements[index].Delete()
-	s.Engagements = append(s.Engagements[:index], s.Engagements[index+1:]...)
+	s.lock.Lock()
+	defer s.lock.Unlock()
 
-	updateMap(s.Engagements, s.EngagementMap)
+	for i, e := range s.Engagements {
+		if e.Name == name {
+			s.Engagements = append(s.Engagements[:i], s.Engagements[i+1:]...)
+			return
+		}
+	}
 }
 
 func (s *State) DeleteTemplate(name string) {
-	index := s.TemplateMap[name]
-	s.Templates[index].Delete()
-	s.Templates = append(s.Templates[:index], s.Templates[index+1:]...)
+	s.lock.Lock()
+	defer s.lock.Unlock()
 
-	updateMap(s.Templates, s.TemplateMap)
+	for i, e := range s.Templates {
+		if e.Name == name {
+			s.Templates = append(s.Templates[:i], s.Templates[i+1:]...)
+			return
+		}
+	}
 }
 
 func sortEngagements(e []engagement.Engagement) {
 	sort.Slice(e, func(i, j int) bool {
 		return e[j].TimeStamp.Before(e[i].TimeStamp)
 	})
-}
-
-func updateMap(engagements []engagement.Engagement, m map[string]int) {
-	for i, e := range engagements {
-		m[e.Name] = i
-	}
 }
